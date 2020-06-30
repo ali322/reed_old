@@ -37,8 +37,6 @@ class _HomeState extends State<HomeScene> {
         ItemRepository(baseURL: widget.baseURL, apiKey: widget.apiKey);
     _itemsBloc = ItemsBloc(repository: _repository);
     _itemsBloc.add(FetchItems());
-    _itemsBloc.add(FetchItems());
-    _itemsBloc.add(FetchItems());
   }
 
   void _openDrawer() {
