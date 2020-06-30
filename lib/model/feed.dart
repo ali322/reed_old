@@ -24,7 +24,7 @@ class Feed {
         this.title = json['title'],
         this.url = json['url'],
         this.faviconID = json['favicon_id'],
-        this.isSpark = json['is_spark'],
+        this.isSpark = json['is_spark'] == 1,
         this.siteURL = json['site_url'],
         this.updatedAt = fromNow(json['last_updated_on_time']);
 }

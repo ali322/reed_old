@@ -73,7 +73,7 @@ class APIBloc extends Bloc<APIEvent, APIState> {
   Stream<APIState> mapEventToState(APIEvent event) async* {
     if (event is VerifyAPI) {
       final _bytes = utf8.encode('${event.username}:${event.password}');
-      final _key = md5.convert(_bytes).bytes.toString();
+      final _key = md5.convert(_bytes).toString();
       final _isValid = await repository.fetchAPI(event.baseURL, _key);
       if (_isValid) {
         yield APIVerifySuccess(baseURL: event.baseURL, apiKey: _key);

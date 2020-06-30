@@ -42,9 +42,10 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
       List<Feed> feeds = await repository.fetchFeeds();
       final favicons = await repository.fetchFavicons();
       feeds = feeds.map<Feed>((feed) {
-        Favicon favicon =
-            favicons.singleWhere((favicon) => favicon.id == feed.faviconID);
-        feed.favicon = favicon.data;
+        Favicon favicon = favicons.firstWhere(
+            (favicon) => favicon.id == feed.faviconID,
+            orElse: () => null);
+        feed.favicon = favicon != null ? favicon.data : null;
         return feed;
       }).toList();
       yield FeedsFetchSuccess(feeds: feeds, groups: groups);

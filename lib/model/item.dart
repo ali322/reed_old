@@ -6,7 +6,7 @@ class Item {
   final String author;
   final String url;
   final String content;
-  final String createdAt;
+  final int createdAt;
   final bool isRead;
   final bool isSaved;
   final int feedID;
@@ -28,8 +28,8 @@ class Item {
         this.author = json['author'],
         this.url = json['url'],
         this.content = json['html'],
-        this.createdAt = fromNow(json['created_on_time']),
-        this.isRead = json['is_read'],
-        this.isSaved = json['is_saved'],
+        this.createdAt = json['created_on_time'],
+        this.isRead = json['is_read'] == 1,
+        this.isSaved = json['is_saved'] == 1,
         this.feedID = json['feed_id'];
 }

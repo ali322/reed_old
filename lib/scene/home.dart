@@ -21,6 +21,7 @@ class HomeScene extends StatefulWidget {
 
 class _HomeState extends State<HomeScene> {
   FeedsBloc _feedsBloc;
+  ItemsBloc _itemsBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -31,6 +32,13 @@ class _HomeState extends State<HomeScene> {
         FeedRepository(baseURL: widget.baseURL, apiKey: widget.apiKey);
     _feedsBloc = FeedsBloc(repository: _feedsRepository);
     _feedsBloc.add(FeedsEvent.FetchFeeds);
+
+    ItemRepository _repository =
+        ItemRepository(baseURL: widget.baseURL, apiKey: widget.apiKey);
+    _itemsBloc = ItemsBloc(repository: _repository);
+    _itemsBloc.add(FetchItems());
+    _itemsBloc.add(FetchItems());
+    _itemsBloc.add(FetchItems());
   }
 
   void _openDrawer() {
@@ -39,32 +47,35 @@ class _HomeState extends State<HomeScene> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Home'),
-        elevation: 0.5,
-        leading: IconButton(icon: Icon(Icons.menu), onPressed: _openDrawer),
-      ),
-      drawer: Drawer(
-        child: Container(
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: _feedsBloc),
+          BlocProvider.value(value: _itemsBloc),
+        ],
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text('Home'),
+            elevation: 0.5,
+            leading: IconButton(icon: Icon(Icons.menu), onPressed: _openDrawer),
+          ),
+          drawer: Drawer(
+              child: Container(
             alignment: Alignment.center,
-            child: MultiBlocProvider(
-              providers: <BlocProvider>[
-                BlocProvider.value(
-                  value: _feedsBloc,
-                ),
-              ],
+            child: BlocProvider.value(
+              value: _feedsBloc,
               child: SideBar(),
+            ),
+          )),
+          body: SafeArea(
+            bottom: true,
+            child: Container(
+                child: BlocProvider.value(
+              value: _itemsBloc,
+              child: Items(baseURL: widget.baseURL, apiKey: widget.apiKey),
             )),
-      ),
-      body: SafeArea(
-        bottom: true,
-        child: Container(
-          child: Items(baseURL: widget.baseURL, apiKey: widget.apiKey),
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

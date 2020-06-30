@@ -30,6 +30,8 @@ class _AppState extends State<App> {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
               primarySwatch: Colors.deepOrange,
+              iconTheme: IconThemeData(color: Colors.black54),
+              hintColor: Colors.black54,
               visualDensity: VisualDensity.adaptivePlatformDensity),
           home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
             if (state is APIVerifySuccess) {
