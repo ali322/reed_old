@@ -18,7 +18,7 @@ class _AppState extends State<App> {
     super.initState();
     final _repository = APIRepository();
     _bloc = APIBloc(repository: _repository);
-    _bloc.add(LoadAPI());
+    _bloc.add(LoadAPICredential());
   }
 
   @override
@@ -34,14 +34,16 @@ class _AppState extends State<App> {
               hintColor: Colors.black54,
               visualDensity: VisualDensity.adaptivePlatformDensity),
           home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
-            if (state is APIVerifySuccess) {
+            if (state is APICredentialSaveSuccess) {
               return HomeScene(baseURL: state.baseURL, apiKey: state.apiKey);
             }
-            if (state is APILoadSuccess) {
+            if (state is APICredentialLoadSuccess) {
               return HomeScene(baseURL: state.baseURL, apiKey: state.apiKey);
+            }
+            if (state is APICredentialLoading) {
+              return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
             }
             return LoginScene();
-            // return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
           }),
         ));
   }

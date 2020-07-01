@@ -1,52 +1,35 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
+import 'package:reed/model/model.dart';
 
 class SideBar extends StatelessWidget {
-  Widget _renderGroups(BuildContext context, List _groups, List _allFeeds) {
+  Widget _renderCategories(BuildContext context, List<Category> categories) {
     return ListView.builder(
-      itemCount: _groups.length,
+      itemCount: categories.length,
       itemBuilder: (BuildContext context, int i) {
-        final _group = _groups[i];
-        final _feeds = _allFeeds
-            .where((_feed) => _group.feeds.contains(_feed.id))
-            .toList();
-        if (_group.title == 'All') {
+        final _category = categories[i];
+        if (_category.feeds.length == 0) {
           return ListTile(
             onTap: () {
-              BlocProvider.of<ItemsBloc>(context).add(FindItems());
               Navigator.of(context).pop();
             },
             title: Container(
-              child: Text(_group.title),
+              child: Text(_category.title),
             ),
           );
         }
         return ExpansionTile(
-          title: Text(_group.title),
-          children: _feeds
+          title: Text(_category.title),
+          children: _category.feeds
               .map<Widget>((_feed) => ListTile(
                     onTap: () {
-                      BlocProvider.of<ItemsBloc>(context)
-                          .add(FindItems(feed: _feed));
                       Navigator.of(context).pop();
                     },
                     title: Container(
                         child: Row(
                           children: <Widget>[
-                            _feed.favicon != null
-                                ? Image.memory(
-                                    base64Decode(_feed.favicon
-                                        .split(';')[1]
-                                        .split(',')[1]),
-                                    width: 20,
-                                    height: 20,
-                                    fit: BoxFit.fill,
-                                    gaplessPlayback: true,
-                                  )
-                                : Container(child: Icon(Icons.rss_feed)),
+                            Container(child: Icon(Icons.rss_feed)),
                             SizedBox(width: 15.0),
                             Expanded(child: Text(_feed.title))
                           ],
@@ -64,11 +47,10 @@ class SideBar extends StatelessWidget {
     return Container(child: BlocBuilder<FeedsBloc, FeedsState>(
       builder: (BuildContext context, FeedsState state) {
         if (state is FeedsFetchSuccess) {
-          final _groups = state.groups;
-          final _allFeeds = state.feeds;
+          final _categories = state.categories;
           return Container(
               padding: const EdgeInsets.only(left: 15.0, right: 10.0),
-              child: _renderGroups(context, _groups, _allFeeds));
+              child: _renderCategories(context, _categories));
         }
         return Container();
       },

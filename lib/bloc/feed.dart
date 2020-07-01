@@ -10,22 +10,21 @@ abstract class FeedsState extends Equatable {
 }
 
 class FeedsInitial extends FeedsState {
-  final List<Feed> feeds = [];
-  final List<Group> groups = [];
+  final List<Category> categories = [];
   @override
-  List<Object> get props => [feeds, groups];
+  List<Object> get props => [categories];
 }
 
 class FeedsFetchSuccess extends FeedsState {
-  final List<Feed> feeds;
-  final List<Group> groups;
-  const FeedsFetchSuccess({@required this.feeds, @required this.groups})
-      : assert(feeds != null),
-        assert(groups != null);
+  final List<Category> categories;
+  const FeedsFetchSuccess({@required this.categories})
+      : assert(categories != null);
 
   @override
-  List<Object> get props => [feeds, groups];
+  List<Object> get props => [categories];
 }
+
+class FeedsFetchFailure extends FeedsState {}
 
 class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
   final FeedRepository repository;
@@ -38,17 +37,12 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
   @override
   Stream<FeedsState> mapEventToState(FeedsEvent event) async* {
     if (event == FeedsEvent.FetchFeeds) {
-      List<Group> groups = await repository.fetchGroups();
-      List<Feed> feeds = await repository.fetchFeeds();
-      final favicons = await repository.fetchFavicons();
-      feeds = feeds.map<Feed>((feed) {
-        Favicon favicon = favicons.firstWhere(
-            (favicon) => favicon.id == feed.faviconID,
-            orElse: () => null);
-        feed.favicon = favicon != null ? favicon.data : null;
-        return feed;
-      }).toList();
-      yield FeedsFetchSuccess(feeds: feeds, groups: groups);
+      try {
+        List<Category> categories = await repository.fetchCategories();
+        yield FeedsFetchSuccess(categories: categories);
+      } catch (e) {
+        yield FeedsFetchFailure();
+      }
     }
   }
 }

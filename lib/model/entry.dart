@@ -1,35 +1,38 @@
 part of model;
 
-class Item {
+class Entry {
   final int id;
   final String title;
   final String author;
   final String url;
   final String content;
-  final int createdAt;
+  final int publishedAt;
   final bool isRead;
-  final bool isSaved;
+  final bool isStarred;
   final int feedID;
+  final Feed feed;
 
-  Item(
+  Entry(
       {this.id,
       this.title,
       this.author,
       this.url,
       this.content,
-      this.createdAt,
+      this.publishedAt,
       this.isRead,
-      this.isSaved,
+      this.isStarred,
+      this.feed,
       this.feedID});
 
-  Item.fromJSON(Map json)
+  Entry.fromJSON(Map json)
       : this.id = json['id'],
         this.title = json['title'],
         this.author = json['author'],
         this.url = json['url'],
         this.content = json['html'],
-        this.createdAt = json['created_on_time'],
-        this.isRead = json['is_read'] == 1,
-        this.isSaved = json['is_saved'] == 1,
+        this.publishedAt = json['published_at'],
+        this.isRead = json['status'] == 'read',
+        this.isStarred = json['starred'],
+        this.feed = Feed.fromJSON(json['feed']),
         this.feedID = json['feed_id'];
 }

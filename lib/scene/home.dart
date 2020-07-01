@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/repository/repository.dart';
-import 'package:reed/scene/items.dart';
+import 'package:reed/scene/entries.dart';
 import 'package:reed/scene/sidebar.dart';
 
 class HomeScene extends StatefulWidget {
@@ -23,7 +23,7 @@ class HomeScene extends StatefulWidget {
 
 class _HomeState extends State<HomeScene> {
   FeedsBloc _feedsBloc;
-  ItemsBloc _itemsBloc;
+  EntriesBloc _entriesBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Completer<void> _completer;
 
@@ -40,10 +40,10 @@ class _HomeState extends State<HomeScene> {
     _feedsBloc = FeedsBloc(repository: _feedsRepository);
     _feedsBloc.add(FeedsEvent.FetchFeeds);
 
-    ItemRepository _repository =
-        ItemRepository(baseURL: widget.baseURL, apiKey: widget.apiKey);
-    _itemsBloc = ItemsBloc(repository: _repository);
-    _itemsBloc.add(FetchItems());
+    EntryRepository _repository =
+        EntryRepository(baseURL: widget.baseURL, apiKey: widget.apiKey);
+    _entriesBloc = EntriesBloc(repository: _repository);
+    _entriesBloc.add(FetchEntries());
   }
 
   void _openDrawer() {
@@ -55,21 +55,21 @@ class _HomeState extends State<HomeScene> {
     return MultiBlocProvider(
         providers: [
           BlocProvider.value(value: _feedsBloc),
-          BlocProvider.value(value: _itemsBloc),
+          BlocProvider.value(value: _entriesBloc),
         ],
         child: Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
             centerTitle: true,
             title: Container(
-                child: BlocConsumer<ItemsBloc, ItemsState>(
-                    listener: (BuildContext context, ItemsState state) {
-              if (state is ItemsFetchSuccess) {
+                child: BlocConsumer<EntriesBloc, EntriesState>(
+                    listener: (BuildContext context, EntriesState state) {
+              if (state is EntriesFetchSuccess) {
                 _completer?.complete();
                 _completer = Completer();
               }
-            }, builder: (BuildContext context, ItemsState state) {
-              return Text(state.category, style: TextStyle(fontSize: 14.0));
+            }, builder: (BuildContext context, EntriesState state) {
+              return Text('123', style: TextStyle(fontSize: 14.0));
             })),
             elevation: 0.5,
             leading: IconButton(icon: Icon(Icons.menu), onPressed: _openDrawer),
@@ -91,8 +91,9 @@ class _HomeState extends State<HomeScene> {
                 },
                 child: Container(
                     child: BlocProvider.value(
-                  value: _itemsBloc,
-                  child: Items(baseURL: widget.baseURL, apiKey: widget.apiKey),
+                  value: _entriesBloc,
+                  child: EntriesScene(
+                      baseURL: widget.baseURL, apiKey: widget.apiKey),
                 )),
               )),
         ));

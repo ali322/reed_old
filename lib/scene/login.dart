@@ -12,8 +12,7 @@ class _LoginState extends State<LoginScene> {
   final _formKey = new GlobalKey<FormState>();
   bool _isSubmiting = false;
   TextEditingController _urlController = new TextEditingController();
-  TextEditingController _usernameController = new TextEditingController();
-  TextEditingController _passwordController = new TextEditingController();
+  TextEditingController _keyController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +24,9 @@ class _LoginState extends State<LoginScene> {
             bottom: true,
             child: BlocListener<APIBloc, APIState>(
                 listener: (BuildContext context, APIState state) {
-                  if (state is APIVerifyFailure) {
+                  if (state is APICredentialSaveFailure) {
                     Scaffold.of(context)
-                        .showSnackBar(SnackBar(content: Text('登录失败')));
+                        .showSnackBar(SnackBar(content: Text('提交失败')));
                     setState(() {
                       _isSubmiting = false;
                     });
@@ -60,34 +59,20 @@ class _LoginState extends State<LoginScene> {
                               return null;
                             },
                             decoration: InputDecoration(
-                              hintText: "请输入地址",
+                              hintText: "请输入API地址",
                               hintStyle: TextStyle(fontSize: 14.0),
                             ),
                           ),
                           TextFormField(
-                            controller: _usernameController,
+                            controller: _keyController,
                             validator: (value) {
                               if (value.isEmpty) {
-                                return '用户名不能为空';
+                                return 'API密钥不能为空';
                               }
                               return null;
                             },
                             decoration: InputDecoration(
-                              hintText: "请输入用户名",
-                              hintStyle: TextStyle(fontSize: 14.0),
-                            ),
-                          ),
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return '密码不能为空';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "请输入密码",
+                              hintText: "请输入API密钥",
                               hintStyle: TextStyle(fontSize: 14.0),
                             ),
                           ),
@@ -95,7 +80,7 @@ class _LoginState extends State<LoginScene> {
                             padding: const EdgeInsets.only(top: 20.0),
                             child: RaisedButton(
                               child:
-                                  Text('登录', style: TextStyle(fontSize: 16.0)),
+                                  Text('提交', style: TextStyle(fontSize: 16.0)),
                               onPressed: _isSubmiting
                                   ? null
                                   : () {
@@ -106,15 +91,10 @@ class _LoginState extends State<LoginScene> {
                                           _isSubmiting = true;
                                         });
                                         final _url = _urlController.text;
-                                        final _username =
-                                            _usernameController.text;
-                                        final _password =
-                                            _passwordController.text;
+                                        final _key = _keyController.text;
                                         BlocProvider.of<APIBloc>(context).add(
-                                            VerifyAPI(
-                                                baseURL: _url,
-                                                username: _username,
-                                                password: _password));
+                                            SaveAPICredential(
+                                                apiKey: _key, baseURL: _url));
                                       }
                                     },
                             ),

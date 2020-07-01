@@ -6,24 +6,19 @@ abstract class APIEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class VerifyAPI extends APIEvent {
+class SaveAPICredential extends APIEvent {
+  final String apiKey;
   final String baseURL;
-  final String username;
-  final String password;
 
-  const VerifyAPI(
-      {@required this.baseURL,
-      @required this.username,
-      @required this.password})
-      : assert(baseURL != null),
-        assert(password != null),
-        assert(username != null);
+  const SaveAPICredential({@required this.apiKey, @required this.baseURL})
+      : assert(apiKey != null),
+        assert(baseURL != null);
 
   @override
-  List<Object> get props => [baseURL, username, password];
+  List<Object> get props => [apiKey, baseURL];
 }
 
-class LoadAPI extends APIEvent {}
+class LoadAPICredential extends APIEvent {}
 
 abstract class APIState extends Equatable {
   const APIState();
@@ -33,33 +28,37 @@ abstract class APIState extends Equatable {
 
 class APIInitial extends APIState {}
 
-class APIVerifySuccess extends APIState {
-  final String baseURL;
+class APICredentialSaveSuccess extends APIState {
   final String apiKey;
+  final String baseURL;
 
-  const APIVerifySuccess({@required this.baseURL, @required this.apiKey})
-      : assert(baseURL != null),
-        assert(apiKey != null);
+  const APICredentialSaveSuccess(
+      {@required this.apiKey, @required this.baseURL})
+      : assert(apiKey != null),
+        assert(baseURL != null);
 
   @override
-  List<Object> get props => [baseURL, apiKey];
+  List<Object> get props => [apiKey, baseURL];
 }
 
-class APIVerifyFailure extends APIState {}
+class APICredentialSaveFailure extends APIState {}
 
-class APILoadSuccess extends APIState {
-  final String baseURL;
+class APICredentialLoadSuccess extends APIState {
   final String apiKey;
+  final String baseURL;
 
-  const APILoadSuccess({@required this.baseURL, @required this.apiKey})
-      : assert(baseURL != null),
-        assert(apiKey != null);
+  const APICredentialLoadSuccess(
+      {@required this.apiKey, @required this.baseURL})
+      : assert(apiKey != null),
+        assert(baseURL != null);
 
   @override
-  List<Object> get props => [baseURL, apiKey];
+  List<Object> get props => [apiKey, baseURL];
 }
 
-class APILoadFailure extends APIState {}
+class APICredentialLoadFailure extends APIState {}
+
+class APICredentialLoading extends APIState {}
 
 class APIBloc extends Bloc<APIEvent, APIState> {
   final APIRepository repository;
@@ -71,22 +70,23 @@ class APIBloc extends Bloc<APIEvent, APIState> {
 
   @override
   Stream<APIState> mapEventToState(APIEvent event) async* {
-    if (event is VerifyAPI) {
-      final _bytes = utf8.encode('${event.username}:${event.password}');
-      final _key = md5.convert(_bytes).toString();
-      final _isValid = await repository.fetchAPI(event.baseURL, _key);
-      if (_isValid) {
-        yield APIVerifySuccess(baseURL: event.baseURL, apiKey: _key);
-      } else {
-        yield APIVerifyFailure();
+    if (event is SaveAPICredential) {
+      try {
+        await repository.saveAPIKey(event.apiKey, event.baseURL);
+        yield APICredentialSaveSuccess(
+            apiKey: event.apiKey, baseURL: event.baseURL);
+      } catch (e) {
+        yield APICredentialSaveFailure();
       }
     }
-    if (event is LoadAPI) {
-      final _ret = await repository.loadAPI();
+    if (event is LoadAPICredential) {
+      yield APICredentialLoading();
+      final _ret = await repository.loadAPIKey();
       if (_ret != null) {
-        yield APILoadSuccess(baseURL: _ret["baseURL"], apiKey: _ret["key"]);
+        yield APICredentialLoadSuccess(
+            apiKey: _ret['key'], baseURL: _ret['baseURL']);
       } else {
-        yield APILoadFailure();
+        yield APICredentialLoadFailure();
       }
     }
   }

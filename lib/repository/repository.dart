@@ -8,9 +8,18 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:reed/model/model.dart';
 
 part 'feed.dart';
-part 'item.dart';
+part 'entry.dart';
 part 'api.dart';
 
-abstract class Repository {
-  final http.Client httpClient = http.Client();
+class APIClient extends http.BaseClient {
+  final String apiKey;
+  final http.Client _inner = new http.Client();
+
+  APIClient(this.apiKey);
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.headers['X-Auth-Token'] = apiKey;
+    return _inner.send(request);
+  }
 }

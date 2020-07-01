@@ -9,5 +9,6 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 part 'feed.dart';
-part 'item.dart';
+part 'entries.dart';
 part 'api.dart';
+part 'entry.dart';

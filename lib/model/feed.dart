@@ -5,16 +5,17 @@ class Feed {
   final String title;
   final String url;
   final String siteURL;
-  final int faviconID;
+  final int iconID;
   final bool isSpark;
   final String updatedAt;
-  String favicon = '';
+  final int categoryID;
 
   Feed(
       {this.id,
       this.title,
       this.url,
-      this.faviconID,
+      this.iconID,
+      this.categoryID,
       this.siteURL,
       this.isSpark,
       this.updatedAt});
@@ -22,9 +23,10 @@ class Feed {
   Feed.fromJSON(Map json)
       : this.id = json['id'],
         this.title = json['title'],
-        this.url = json['url'],
-        this.faviconID = json['favicon_id'],
+        this.url = json['feed_url'],
+        this.iconID = json['icon']['icon_id'],
+        this.categoryID = json['category']['id'],
         this.isSpark = json['is_spark'] == 1,
         this.siteURL = json['site_url'],
-        this.updatedAt = fromNow(json['last_updated_on_time']);
+        this.updatedAt = fromNow(json['checked_at']);
 }

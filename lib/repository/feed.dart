@@ -1,6 +1,6 @@
 part of repository;
 
-class FeedRepository extends Repository {
+class FeedRepository {
   final String apiKey;
   final String baseURL;
 
@@ -8,57 +8,44 @@ class FeedRepository extends Repository {
       : assert(apiKey != null),
         assert(baseURL != null);
 
-  Future<List<Group>> fetchGroups() async {
-    http.Response ret = await this
-        .httpClient
-        .post('$baseURL?api&groups', body: {'api_key': apiKey});
+  Future<List<Category>> fetchCategories() async {
+    http.Response ret = await APIClient(apiKey).get('$baseURL/categories');
     if (ret.statusCode != 200) {
-      throw ("fetch groups failed");
+      throw ("fetch categories failed");
     } else {
-      var decoded = json.decode(ret.body) as Map<String, dynamic>;
-      List<Group> _groups = decoded['groups'].map<Group>((v) {
-        Group _group = Group.fromJSON(v);
-        if (_group.title != 'All') {
-          _group.feeds = Group.groupFeeds(decoded['feeds_groups'], _group.id);
-        }
-        return _group;
+      ret.headers['content-type'] = 'application/json;charset=utf-8';
+      var decoded = json.decode(ret.body) as List<Map<String, dynamic>>;
+      List<Category> _categories =
+          decoded.map<Category>((v) => Category.fromJSON(v)).toList();
+      var _feeds = await fetchFeeds();
+      _categories = _categories.map((_category) {
+        _category.feeds =
+            _feeds.where((v) => v.categoryID == _category.id).toList();
+        return _category;
       }).toList();
-      return _groups.toList();
+      return _categories;
     }
   }
 
   Future<List<Feed>> fetchFeeds() async {
-    http.Response ret = await this
-        .httpClient
-        .post('${this.baseURL}?api&feeds', body: {'api_key': apiKey});
+    http.Response ret = await APIClient(apiKey).get('${this.baseURL}/feeds');
     if (ret.statusCode != 200) {
       throw ("fetch feeds failed");
     } else {
       ret.headers['content-type'] = 'application/json;charset=utf-8';
-      var decoded = json.decode(ret.body) as Map<String, dynamic>;
-      return decoded["feeds"].map<Feed>((v) => Feed.fromJSON(v)).toList();
+      var decoded = json.decode(ret.body) as List<Map<String, dynamic>>;
+      return decoded.map<Feed>((v) => Feed.fromJSON(v)).toList();
     }
   }
 
-  Future<List<Favicon>> fetchFavicons() async {
-    http.Response ret = await this
-        .httpClient
-        .post('${this.baseURL}?api&favicons', body: {'api_key': apiKey});
+  Future<String> fetchFeedIcon(int id) async {
+    http.Response ret =
+        await APIClient(apiKey).get('${this.baseURL}/feeds/$id/icon');
     if (ret.statusCode != 200) {
-      throw ("fetch favicons failed");
+      throw ("fetch feed icon failed");
     } else {
       var decoded = json.decode(ret.body) as Map<String, dynamic>;
-      List<Favicon> favicons =
-          decoded["favicons"].map<Favicon>((v) => Favicon.fromJSON(v)).toList();
-      List<Favicon> _unique = [];
-      for (var i = 0; i < favicons.length; i++) {
-        if (_unique.map((e) => e.id).toList().contains(favicons[i].id) ==
-                false ||
-            _unique.isEmpty) {
-          _unique.add(favicons[i]);
-        }
-      }
-      return _unique;
+      return decoded['data'];
     }
   }
 }
