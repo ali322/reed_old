@@ -9,16 +9,18 @@ abstract class ItemsEvent extends Equatable {
 class FetchItems extends ItemsEvent {}
 
 class FindItems extends ItemsEvent {
-  final int feedID;
+  final Feed feed;
   final FeedType feedType;
 
-  const FindItems({this.feedID, this.feedType = FeedType.All});
+  const FindItems({this.feed, this.feedType = FeedType.All});
 
   @override
-  List<Object> get props => [feedID];
+  List<Object> get props => [feed, feedType];
 }
 
 abstract class ItemsState extends Equatable {
+  final List<Item> items = const [];
+  final String category = 'All Items';
   const ItemsState();
 
   @override
@@ -27,24 +29,29 @@ abstract class ItemsState extends Equatable {
 
 class ItemsIntial extends ItemsState {
   final List<Item> items = [];
+  final String category = 'All Items';
   @override
-  List<Object> get props => [items];
+  List<Object> get props => [items, category];
 }
 
 class ItemsFetchSuccess extends ItemsState {
   final List<Item> items;
+  final String category = 'All Items';
   const ItemsFetchSuccess({@required this.items}) : assert(items != null);
 
   @override
-  List<Object> get props => [items];
+  List<Object> get props => [items, category];
 }
 
 class ItemsFindSuccess extends ItemsState {
   final List<Item> items;
-  const ItemsFindSuccess({@required this.items}) : assert(items != null);
+  final String category;
+  const ItemsFindSuccess({@required this.items, @required this.category})
+      : assert(items != null),
+        assert(category != null);
 
   @override
-  List<Object> get props => [items];
+  List<Object> get props => [items, category];
 }
 
 class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
@@ -62,8 +69,10 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       yield ItemsFetchSuccess(items: items);
     } else if (event is FindItems) {
       final items =
-          repository.findItems(feedID: event.feedID, type: event.feedType);
-      yield ItemsFindSuccess(items: items);
+          repository.findItems(feed: event.feed, type: event.feedType);
+      yield ItemsFindSuccess(
+          items: items,
+          category: event.feed != null ? event.feed.title : 'All Items');
     }
   }
 }

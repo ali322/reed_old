@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
@@ -23,11 +25,16 @@ class _HomeState extends State<HomeScene> {
   FeedsBloc _feedsBloc;
   ItemsBloc _itemsBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Completer<void> _completer;
 
   @override
   void initState() {
     super.initState();
+    _fetchInitial();
+    _completer = Completer<void>();
+  }
 
+  void _fetchInitial() {
     FeedRepository _feedsRepository =
         FeedRepository(baseURL: widget.baseURL, apiKey: widget.apiKey);
     _feedsBloc = FeedsBloc(repository: _feedsRepository);
@@ -54,7 +61,16 @@ class _HomeState extends State<HomeScene> {
           key: _scaffoldKey,
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Home'),
+            title: Container(
+                child: BlocConsumer<ItemsBloc, ItemsState>(
+                    listener: (BuildContext context, ItemsState state) {
+              if (state is ItemsFetchSuccess) {
+                _completer?.complete();
+                _completer = Completer();
+              }
+            }, builder: (BuildContext context, ItemsState state) {
+              return Text(state.category, style: TextStyle(fontSize: 14.0));
+            })),
             elevation: 0.5,
             leading: IconButton(icon: Icon(Icons.menu), onPressed: _openDrawer),
           ),
@@ -67,13 +83,18 @@ class _HomeState extends State<HomeScene> {
             ),
           )),
           body: SafeArea(
-            bottom: true,
-            child: Container(
-                child: BlocProvider.value(
-              value: _itemsBloc,
-              child: Items(baseURL: widget.baseURL, apiKey: widget.apiKey),
-            )),
-          ),
+              bottom: true,
+              child: RefreshIndicator(
+                onRefresh: () {
+                  _fetchInitial();
+                  return _completer.future;
+                },
+                child: Container(
+                    child: BlocProvider.value(
+                  value: _itemsBloc,
+                  child: Items(baseURL: widget.baseURL, apiKey: widget.apiKey),
+                )),
+              )),
         ));
   }
 }

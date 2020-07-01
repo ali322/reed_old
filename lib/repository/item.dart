@@ -33,12 +33,12 @@ class ItemRepository extends Repository {
     return this.items;
   }
 
-  List<Item> findItems({int feedID, FeedType type}) {
+  List<Item> findItems({Feed feed, FeedType type}) {
     var _next = this.items.sublist(0);
     // print('<===${_next.map((v) => v.id).toList()}');
     print('${_next.length}');
-    if (feedID != null) {
-      _next = _next.where((v) => v.feedID == feedID).toList();
+    if (feed != null) {
+      _next = _next.where((v) => v.feedID == feed.id).toList();
     }
     if (_next.length > 0) {
       print('==>${_next[0].title} ${_next[0].id} ${_next[0].feedID}');

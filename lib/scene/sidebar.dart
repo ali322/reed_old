@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 
 class SideBar extends StatelessWidget {
-  Widget _buildGroups(BuildContext context, List _groups, List _allFeeds) {
+  Widget _renderGroups(BuildContext context, List _groups, List _allFeeds) {
     return ListView.builder(
       itemCount: _groups.length,
       itemBuilder: (BuildContext context, int i) {
@@ -15,6 +15,10 @@ class SideBar extends StatelessWidget {
             .toList();
         if (_group.title == 'All') {
           return ListTile(
+            onTap: () {
+              BlocProvider.of<ItemsBloc>(context).add(FindItems());
+              Navigator.of(context).pop();
+            },
             title: Container(
               child: Text(_group.title),
             ),
@@ -26,7 +30,8 @@ class SideBar extends StatelessWidget {
               .map<Widget>((_feed) => ListTile(
                     onTap: () {
                       BlocProvider.of<ItemsBloc>(context)
-                          .add(FindItems(feedID: _feed.id));
+                          .add(FindItems(feed: _feed));
+                      Navigator.of(context).pop();
                     },
                     title: Container(
                         child: Row(
@@ -63,7 +68,7 @@ class SideBar extends StatelessWidget {
           final _allFeeds = state.feeds;
           return Container(
               padding: const EdgeInsets.only(left: 15.0, right: 10.0),
-              child: _buildGroups(context, _groups, _allFeeds));
+              child: _renderGroups(context, _groups, _allFeeds));
         }
         return Container();
       },
