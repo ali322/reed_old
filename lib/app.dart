@@ -21,6 +21,18 @@ class _AppState extends State<App> {
     _bloc.add(LoadAPICredential());
   }
 
+  Widget _renderHome(context, state) {
+    return MultiRepositoryProvider(providers: [
+      RepositoryProvider<FeedRepository>(
+          create: (context) =>
+              FeedRepository(apiKey: state.apiKey, baseURL: state.baseURL)),
+      RepositoryProvider<EntryRepository>(
+        create: (context) =>
+            EntryRepository(apiKey: state.apiKey, baseURL: state.baseURL),
+      )
+    ], child: HomeScene());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -35,10 +47,10 @@ class _AppState extends State<App> {
               visualDensity: VisualDensity.adaptivePlatformDensity),
           home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
             if (state is APICredentialSaveSuccess) {
-              return HomeScene(baseURL: state.baseURL, apiKey: state.apiKey);
+              return _renderHome(context, state);
             }
             if (state is APICredentialLoadSuccess) {
-              return HomeScene(baseURL: state.baseURL, apiKey: state.apiKey);
+              return _renderHome(context, state);
             }
             if (state is APICredentialLoading) {
               return Center(child: CircularProgressIndicator(strokeWidth: 2.0));

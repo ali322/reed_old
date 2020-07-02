@@ -3,7 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/model/model.dart';
 
+typedef TitleChanged = void Function({Feed feed});
+
 class SideBar extends StatelessWidget {
+  final TitleChanged onChange;
+  const SideBar({@required this.onChange}) : assert(onChange != null);
+
   Widget _renderCategories(BuildContext context, List<Category> categories) {
     return ListView.builder(
       itemCount: categories.length,
@@ -12,6 +17,7 @@ class SideBar extends StatelessWidget {
         if (_category.feeds.length == 0) {
           return ListTile(
             onTap: () {
+              onChange();
               Navigator.of(context).pop();
             },
             title: Container(
@@ -24,6 +30,7 @@ class SideBar extends StatelessWidget {
           children: _category.feeds
               .map<Widget>((_feed) => ListTile(
                     onTap: () {
+                      onChange(feed: _feed);
                       Navigator.of(context).pop();
                     },
                     title: Container(

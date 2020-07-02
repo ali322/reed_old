@@ -6,7 +6,7 @@ class Entry {
   final String author;
   final String url;
   final String content;
-  final int publishedAt;
+  final String publishedAt;
   final bool isRead;
   final bool isStarred;
   final int feedID;
@@ -29,10 +29,10 @@ class Entry {
         this.title = json['title'],
         this.author = json['author'],
         this.url = json['url'],
-        this.content = json['html'],
+        this.content = json['content'],
         this.publishedAt = json['published_at'],
         this.isRead = json['status'] == 'read',
         this.isStarred = json['starred'],
         this.feed = Feed.fromJSON(json['feed']),
-        this.feedID = json['feed_id'];
+        this.feedID = json['feed']['id'];
 }

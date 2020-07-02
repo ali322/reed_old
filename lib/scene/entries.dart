@@ -5,13 +5,6 @@ import 'package:reed/model/model.dart';
 import 'package:reed/scene/entry.dart';
 
 class EntriesScene extends StatelessWidget {
-  final String baseURL;
-  final String apiKey;
-
-  const EntriesScene({@required this.baseURL, @required this.apiKey})
-      : assert(baseURL != null),
-        assert(apiKey != null);
-
   Widget _renderEntries(List<Entry> entries) {
     return ListView.builder(
       itemCount: entries.length,
@@ -22,7 +15,7 @@ class EntriesScene extends StatelessWidget {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) => EntryScene(id: _entry.id)));
           },
-          title: Text(_entry.title),
+          title: Text(_entry.title, style: TextStyle(fontSize: 14.0)),
           subtitle: Row(children: <Widget>[
             Text(_entry.author,
                 style: TextStyle(fontSize: 12.0, color: Colors.grey)),

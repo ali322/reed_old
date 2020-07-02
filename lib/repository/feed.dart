@@ -14,7 +14,7 @@ class FeedRepository {
       throw ("fetch categories failed");
     } else {
       ret.headers['content-type'] = 'application/json;charset=utf-8';
-      var decoded = json.decode(ret.body) as List<Map<String, dynamic>>;
+      var decoded = json.decode(ret.body);
       List<Category> _categories =
           decoded.map<Category>((v) => Category.fromJSON(v)).toList();
       var _feeds = await fetchFeeds();
@@ -33,7 +33,7 @@ class FeedRepository {
       throw ("fetch feeds failed");
     } else {
       ret.headers['content-type'] = 'application/json;charset=utf-8';
-      var decoded = json.decode(ret.body) as List<Map<String, dynamic>>;
+      var decoded = json.decode(ret.body);
       return decoded.map<Feed>((v) => Feed.fromJSON(v)).toList();
     }
   }

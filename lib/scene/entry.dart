@@ -7,14 +7,7 @@ import 'package:reed/repository/repository.dart';
 
 class EntryScene extends StatefulWidget {
   final int id;
-  final String baseURL;
-  final String apiKey;
-
-  const EntryScene(
-      {@required this.id, @required this.baseURL, @required this.apiKey})
-      : assert(id != null),
-        assert(baseURL != null),
-        assert(apiKey != null);
+  const EntryScene({@required this.id}) : assert(id != null);
   @override
   State<StatefulWidget> createState() => _EntryState();
 }
@@ -24,8 +17,7 @@ class _EntryState extends State<EntryScene> {
   @override
   void initState() {
     super.initState();
-    EntryRepository _repository =
-        EntryRepository(baseURL: widget.baseURL, apiKey: widget.apiKey);
+    EntryRepository _repository = context.repository<EntryRepository>();
     _bloc = EntryBloc(repository: _repository);
     _bloc.add(FetchEntry(id: widget.id));
   }
@@ -71,24 +63,24 @@ class _EntryState extends State<EntryScene> {
           ),
         ),
         body: SafeArea(
-          bottom: true,
-          child: SingleChildScrollView(
-              child: BlocBuilder(
-            bloc: _bloc,
-            builder: (BuildContext context, state) {
-              if (state is EntryFetchSuccess) {
-                final _entry = state.entry;
-                return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Column(children: <Widget>[
-                      _renderTitle(context, _entry),
-                      _renderBrief(context, _entry),
-                      _renderBody(context, _entry)
-                    ]));
-              }
-              return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
-            },
-          )),
-        ));
+            bottom: true,
+            child: BlocBuilder(
+              bloc: _bloc,
+              builder: (BuildContext context, state) {
+                if (state is EntryFetchSuccess) {
+                  final _entry = state.entry;
+                  return SingleChildScrollView(
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Column(children: <Widget>[
+                            _renderTitle(context, _entry),
+                            _renderBrief(context, _entry),
+                            _renderBody(context, _entry)
+                          ])));
+                }
+                return Center(
+                    child: CircularProgressIndicator(strokeWidth: 2.0));
+              },
+            )));
   }
 }

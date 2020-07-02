@@ -6,7 +6,11 @@ abstract class EntriesEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class FetchEntries extends EntriesEvent {}
+class FetchEntries extends EntriesEvent {
+  final Feed feed;
+
+  const FetchEntries({this.feed});
+}
 
 abstract class EntriesState extends Equatable {
   const EntriesState();
@@ -21,6 +25,8 @@ class EntriesIntial extends EntriesState {
   @override
   List<Object> get props => [entries, total];
 }
+
+class EntriesFetching extends EntriesState {}
 
 class EntriesFetchSuccess extends EntriesState {
   final List<Entry> entries;
@@ -46,10 +52,10 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
   @override
   Stream<EntriesState> mapEventToState(EntriesEvent event) async* {
     if (event is FetchEntries) {
+      yield EntriesFetching();
       try {
-        final _ret = await repository.fetchEntries();
-        yield EntriesFetchSuccess(
-            entries: _ret['entries'], total: _ret['total']);
+        final _ret = await repository.fetchEntries(feed: event.feed);
+        yield EntriesFetchSuccess(entries: _ret['rows'], total: _ret['total']);
       } catch (e) {
         yield EntriesFetchFailure();
       }

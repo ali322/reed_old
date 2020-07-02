@@ -4,6 +4,7 @@ final storage = new FlutterSecureStorage();
 
 class APIRepository {
   Future<Map<String, dynamic>> loadAPIKey() async {
+    // await storage.deleteAll();
     final _ret = await storage.read(key: 'api');
     return _ret != null ? json.decode(_ret) as Map<String, dynamic> : null;
   }
