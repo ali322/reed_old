@@ -57,7 +57,7 @@ class _HomeState extends State<HomeScene> {
   }
 
   Future<void> _onRefresh() {
-    _entriesBloc.add(FetchEntries(feed: _selectedFeed));
+    _entriesBloc.add(RefreshEntries(feed: _selectedFeed));
     return _completer.future;
   }
 
@@ -85,7 +85,7 @@ class _HomeState extends State<HomeScene> {
               bottom: true,
               child: BlocListener<EntriesBloc, EntriesState>(
                   listener: (context, state) {
-                    if (state is EntriesFetchSuccess) {
+                    if (state is EntriesRefreshSuccess) {
                       _completer?.complete();
                       _completer = Completer();
                     }

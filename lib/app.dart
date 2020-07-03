@@ -16,6 +16,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
+    BlocSupervisor.delegate = SimpleBlocDelegate();
     final _repository = APIRepository();
     _bloc = APIBloc(repository: _repository);
     _bloc.add(LoadAPICredential());
@@ -46,10 +47,8 @@ class _AppState extends State<App> {
               hintColor: Colors.black54,
               visualDensity: VisualDensity.adaptivePlatformDensity),
           home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
-            if (state is APICredentialSaveSuccess) {
-              return _renderHome(context, state);
-            }
-            if (state is APICredentialLoadSuccess) {
+            if (state is APICredentialSaveSuccess ||
+                state is APICredentialLoadSuccess) {
               return _renderHome(context, state);
             }
             if (state is APICredentialLoading) {

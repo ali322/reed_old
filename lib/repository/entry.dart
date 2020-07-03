@@ -10,12 +10,15 @@ class EntryRepository {
       : assert(apiKey != null),
         assert(baseURL != null);
 
-  Future<Map<String, dynamic>> fetchEntries({Feed feed}) async {
-    String _url = '$baseURL/entries?order=published_at&direction=desc';
+  Future<Map<String, dynamic>> fetchEntries(
+      {Feed feed, int lastRefreshedAt}) async {
+    String _url =
+        '$baseURL/entries?order=published_at&direction=desc&after=$lastRefreshedAt';
     if (feed != null) {
       _url =
-          '$baseURL/feeds/${feed.id}/entries?order=published_at&direction=desc';
+          '$baseURL/feeds/${feed.id}/entries?order=published_at&direction=desc&after=$lastRefreshedAt';
     }
+    print('===>$_url');
     http.Response ret = await APIClient(apiKey).get(_url);
     if (ret.statusCode != 200) {
       throw ("fetch entries failed");

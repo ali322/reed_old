@@ -37,6 +37,10 @@ class EntriesScene extends StatelessWidget {
             final _entries = state.entries;
             return _renderEntries(_entries);
           }
+          if (state is EntriesRefreshSuccess) {
+            final _entries = state.entries;
+            return _renderEntries(_entries);
+          }
           return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
         },
       ),
