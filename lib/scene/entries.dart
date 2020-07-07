@@ -2,18 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/model/model.dart';
+import 'package:reed/repository/repository.dart';
 import 'package:reed/scene/entry.dart';
 
 class EntriesScene extends StatelessWidget {
   Widget _renderEntries(List<Entry> entries) {
     return ListView.builder(
       itemCount: entries.length,
+      itemExtent: 60,
       itemBuilder: (BuildContext context, int i) {
         final _entry = entries[i];
         return ListTile(
+          dense: true,
           onTap: () {
+            final _repository = context.repository<EntryRepository>();
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => EntryScene(id: _entry.id)));
+                builder: (BuildContext context) => RepositoryProvider.value(
+                    value: _repository, child: EntryScene(id: _entry.id))));
           },
           title: Text(_entry.title, style: TextStyle(fontSize: 14.0)),
           subtitle: Row(children: <Widget>[

@@ -41,6 +41,7 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
         List<Category> categories = await repository.fetchCategories();
         yield FeedsFetchSuccess(categories: categories);
       } catch (e) {
+        print(e);
         yield FeedsFetchFailure();
       }
     }

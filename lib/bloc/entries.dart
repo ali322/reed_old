@@ -8,8 +8,10 @@ abstract class EntriesEvent extends Equatable {
 
 class FetchEntries extends EntriesEvent {
   final Feed feed;
+  final EntryStatus status;
+  final String search;
 
-  const FetchEntries({this.feed});
+  const FetchEntries({this.feed, this.status, this.search});
 }
 
 class RefreshEntries extends EntriesEvent {
@@ -83,7 +85,8 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
     if (event is FetchEntries) {
       yield EntriesFetching();
       try {
-        final _ret = await repository.fetchEntries(feed: event.feed);
+        final _ret = await repository.fetchEntries(
+            feed: event.feed, status: event.status, search: event.search);
         yield EntriesFetchSuccess(
             entries: _ret['rows'], total: _ret['total'], lastFetchedAt: _now());
       } catch (e) {

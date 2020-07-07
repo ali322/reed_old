@@ -1,6 +1,6 @@
 part of repository;
 
-enum FeedType { UnReaded, Saved, All }
+enum EntryStatus { UnReaded, Starred, All }
 
 class EntryRepository {
   final String apiKey;
@@ -11,14 +11,26 @@ class EntryRepository {
         assert(baseURL != null);
 
   Future<Map<String, dynamic>> fetchEntries(
-      {Feed feed, int lastRefreshedAt}) async {
+      {Feed feed,
+      int lastRefreshedAt,
+      String search,
+      EntryStatus status = EntryStatus.All}) async {
     String _url =
         '$baseURL/entries?order=published_at&direction=desc&after=$lastRefreshedAt';
     if (feed != null) {
       _url =
           '$baseURL/feeds/${feed.id}/entries?order=published_at&direction=desc&after=$lastRefreshedAt';
     }
-    print('===>$_url');
+    if (status == EntryStatus.UnReaded) {
+      _url += '&status=unread';
+    }
+    if (status == EntryStatus.Starred) {
+      _url += '&starred=true';
+    }
+    if (search != null) {
+      _url += '&search=$search';
+    }
+    // print('===>$_url');
     http.Response ret = await APIClient(apiKey).get(_url);
     if (ret.statusCode != 200) {
       throw ("fetch entries failed");

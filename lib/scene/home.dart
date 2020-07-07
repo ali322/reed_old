@@ -81,6 +81,54 @@ class _HomeState extends State<HomeScene> {
             alignment: Alignment.center,
             child: SideBar(onChange: _onSidebarChange),
           )),
+          bottomNavigationBar: BottomAppBar(
+              child: SizedBox(
+            height: 64.0,
+            child: Row(children: <Widget>[
+              Expanded(
+                child: InkWell(
+                    onTap: () {
+                      _entriesBloc.add(FetchEntries(
+                          feed: _selectedFeed, status: EntryStatus.UnReaded));
+                    },
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.adjust),
+                          SizedBox(height: 6.0),
+                          Text('Unread')
+                        ])),
+              ),
+              Expanded(
+                child: InkWell(
+                    onTap: () {
+                      _entriesBloc.add(FetchEntries(
+                          feed: _selectedFeed, status: EntryStatus.All));
+                    },
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.public),
+                          SizedBox(height: 6.0),
+                          Text('All')
+                        ])),
+              ),
+              Expanded(
+                child: InkWell(
+                    onTap: () {
+                      _entriesBloc.add(FetchEntries(
+                          feed: _selectedFeed, status: EntryStatus.Starred));
+                    },
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.favorite_border),
+                          SizedBox(height: 6.0),
+                          Text('Favorite')
+                        ])),
+              ),
+            ]),
+          )),
           body: SafeArea(
               bottom: true,
               child: BlocListener<EntriesBloc, EntriesState>(

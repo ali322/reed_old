@@ -16,6 +16,7 @@ class SideBar extends StatelessWidget {
         final _category = categories[i];
         if (_category.feeds.length == 0) {
           return ListTile(
+            dense: true,
             onTap: () {
               onChange();
               Navigator.of(context).pop();
@@ -28,16 +29,18 @@ class SideBar extends StatelessWidget {
         return ExpansionTile(
           title: Text(_category.title),
           children: _category.feeds
-              .map<Widget>((_feed) => ListTile(
+              .map<Widget>((_feed) => InkWell(
                     onTap: () {
                       onChange(feed: _feed);
                       Navigator.of(context).pop();
                     },
-                    title: Container(
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 16.0),
                         child: Row(
                           children: <Widget>[
                             Container(child: Icon(Icons.rss_feed)),
-                            SizedBox(width: 15.0),
+                            SizedBox(width: 12.0),
                             Expanded(child: Text(_feed.title))
                           ],
                         ),
