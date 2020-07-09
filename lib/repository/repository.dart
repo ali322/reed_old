@@ -10,6 +10,9 @@ import 'package:reed/model/model.dart';
 part 'feed.dart';
 part 'entry.dart';
 part 'api.dart';
+part 'settings.dart';
+
+final storage = new FlutterSecureStorage();
 
 class APIClient extends http.BaseClient {
   final String apiKey;

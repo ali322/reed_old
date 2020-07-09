@@ -7,11 +7,14 @@ abstract class APIEvent extends Equatable {
 }
 
 class SaveAPICredential extends APIEvent {
+  final String title;
   final String apiKey;
   final String baseURL;
 
-  const SaveAPICredential({@required this.apiKey, @required this.baseURL})
+  const SaveAPICredential(
+      {@required this.title, @required this.apiKey, @required this.baseURL})
       : assert(apiKey != null),
+        assert(title != null),
         assert(baseURL != null);
 
   @override
@@ -31,10 +34,12 @@ class APIInitial extends APIState {}
 class APICredentialSaveSuccess extends APIState {
   final String apiKey;
   final String baseURL;
+  final String title;
 
   const APICredentialSaveSuccess(
-      {@required this.apiKey, @required this.baseURL})
+      {@required this.apiKey, @required this.baseURL, @required this.title})
       : assert(apiKey != null),
+        assert(title != null),
         assert(baseURL != null);
 
   @override
@@ -46,10 +51,12 @@ class APICredentialSaveFailure extends APIState {}
 class APICredentialLoadSuccess extends APIState {
   final String apiKey;
   final String baseURL;
+  final String title;
 
   const APICredentialLoadSuccess(
-      {@required this.apiKey, @required this.baseURL})
+      {@required this.apiKey, @required this.baseURL, @required this.title})
       : assert(apiKey != null),
+        assert(title != null),
         assert(baseURL != null);
 
   @override
@@ -72,19 +79,22 @@ class APIBloc extends Bloc<APIEvent, APIState> {
   Stream<APIState> mapEventToState(APIEvent event) async* {
     if (event is SaveAPICredential) {
       try {
-        await repository.saveAPIKey(event.apiKey, event.baseURL);
+        await repository.saveAPI(
+            apiKey: event.apiKey, baseURL: event.baseURL, title: event.title);
         yield APICredentialSaveSuccess(
-            apiKey: event.apiKey, baseURL: event.baseURL);
+            title: event.title, apiKey: event.apiKey, baseURL: event.baseURL);
       } catch (e) {
         yield APICredentialSaveFailure();
       }
     }
     if (event is LoadAPICredential) {
       yield APICredentialLoading();
-      final _ret = await repository.loadAPIKey();
+      final _ret = await repository.loadAPI();
       if (_ret != null) {
         yield APICredentialLoadSuccess(
-            apiKey: _ret['key'], baseURL: _ret['baseURL']);
+            title: _ret['title'],
+            apiKey: _ret['key'],
+            baseURL: _ret['baseURL']);
       } else {
         yield APICredentialLoadFailure();
       }

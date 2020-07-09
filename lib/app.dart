@@ -5,21 +5,29 @@ import 'package:reed/repository/repository.dart';
 import 'package:reed/scene/home.dart';
 import 'package:reed/scene/login.dart';
 
+import 'bloc/bloc.dart';
+import 'repository/repository.dart';
+
 class App extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AppState();
 }
 
 class _AppState extends State<App> {
-  APIBloc _bloc;
+  APIBloc _apiBloc;
+  SettingsBloc _settingsBloc;
 
   @override
   void initState() {
     super.initState();
     BlocSupervisor.delegate = SimpleBlocDelegate();
-    final _repository = APIRepository();
-    _bloc = APIBloc(repository: _repository);
-    _bloc.add(LoadAPICredential());
+    final _apiRepository = APIRepository();
+    _apiBloc = APIBloc(repository: _apiRepository);
+    _apiBloc.add(LoadAPICredential());
+
+    final _settingsRepository = SettingsRepository();
+    _settingsBloc = SettingsBloc(repository: _settingsRepository);
+    _settingsBloc.add(LoadSettings());
   }
 
   Widget _renderHome(context, state) {
@@ -36,8 +44,11 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-        value: _bloc,
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: _apiBloc),
+          BlocProvider.value(value: _settingsBloc),
+        ],
         child: MaterialApp(
           title: 'Reed',
           debugShowCheckedModeBanner: false,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/model/model.dart';
+import './settings.dart';
 
 typedef TitleChanged = void Function({Feed feed});
 
@@ -60,9 +61,22 @@ class SideBar extends StatelessWidget {
           final _categories = state.categories;
           return Container(
               padding: const EdgeInsets.only(left: 15.0, right: 10.0),
-              child: _renderCategories(context, _categories));
+              child: Column(children: [
+                SizedBox(height: 40.0),
+                Expanded(child: _renderCategories(context, _categories)),
+                ListTile(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SettingsScene()
+                    ));
+                  },
+                  dense: true,
+                  title: Text('Setting'),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
+                )
+              ]));
         }
-        return Container();
+        return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
       },
     ));
   }

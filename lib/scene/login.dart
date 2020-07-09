@@ -11,6 +11,7 @@ class _LoginState extends State<LoginScene> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
   bool _isSubmiting = false;
+  TextEditingController _titleController = new TextEditingController();
   TextEditingController _urlController = new TextEditingController();
   TextEditingController _keyController = new TextEditingController();
 
@@ -48,6 +49,19 @@ class _LoginState extends State<LoginScene> {
                                 SizedBox(height: 8.0),
                                 Text('Fever', style: TextStyle(fontSize: 18.0)),
                               ],
+                            ),
+                          ),
+                          TextFormField(
+                            controller: _titleController,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return '标题不能为空';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: "请输入标题",
+                              hintStyle: TextStyle(fontSize: 14.0),
                             ),
                           ),
                           TextFormField(
@@ -90,11 +104,14 @@ class _LoginState extends State<LoginScene> {
                                         setState(() {
                                           _isSubmiting = true;
                                         });
+                                        final _title = _titleController.text;
                                         final _url = _urlController.text;
                                         final _key = _keyController.text;
                                         BlocProvider.of<APIBloc>(context).add(
                                             SaveAPICredential(
-                                                apiKey: _key, baseURL: _url));
+                                                title: _title,
+                                                apiKey: _key,
+                                                baseURL: _url));
                                       }
                                     },
                             ),
