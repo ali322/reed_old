@@ -36,6 +36,9 @@ class EntriesScene extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // color: Theme.of(context).brightness == Brightness.light
+      //     ? Theme.of(context).primaryColorLight
+      //     : Theme.of(context).primaryColorDark,
       child: BlocBuilder<EntriesBloc, EntriesState>(
         builder: (BuildContext context, EntriesState state) {
           if (state is EntriesFetchSuccess) {

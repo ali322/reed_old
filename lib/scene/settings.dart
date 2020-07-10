@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/bloc.dart';
+import '../bloc/bloc.dart';
 
 class SettingsScene extends StatefulWidget {
   @override
@@ -40,17 +41,29 @@ class _SettingsState extends State<SettingsScene> {
                             leading: Icon(Icons.iso),
                             title: Text('Dark Mode'),
                             trailing: Switch(
-                                value: state.isDarkMode,
+                                value: state.values['isDarkMode'],
                                 onChanged: (bool truthy) {
                                   context.bloc<SettingsBloc>().add(
-                                      SettingsChangeDarkMode(truthy: truthy));
+                                    SettingsChanged(key: 'isDarkMode', value: truthy)
+                                  );
                                 })),
                         ListTile(
                           dense: true,
                           leading: Icon(Icons.language),
                           title: Text('Language'),
-                          subtitle: Text('English'),
-                          trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
+                          trailing: DropdownButton(
+                            value: state.values['language'],
+                            onChanged: (val) {
+                              context.bloc<SettingsBloc>().add(
+                                SettingsChanged(key: 'language', value: val)
+                              );
+                            },
+                            items: <String>['English', 'Chinese']
+                                .map<DropdownMenuItem>((val) =>
+                                    DropdownMenuItem(
+                                        child: Text(val), value: val))
+                                .toList(),
+                          ),
                         ),
                       ],
                     )
@@ -72,10 +85,8 @@ class SettingsSection extends StatelessWidget {
     final List<Widget> _colums = [];
     if (header != null) {
       _colums.add(DefaultTextStyle(
-        style: TextStyle(
-            fontSize: 13.5,
-            letterSpacing: -0.5,
-            color: CupertinoColors.inactiveGray),
+        style:
+            TextStyle(fontSize: 13.5, letterSpacing: -0.5, color: Colors.grey),
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 12.0),
           child: header,

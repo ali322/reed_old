@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/repository/repository.dart';
@@ -44,18 +45,32 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
+    print(context.locale.toLanguageTag());
     return MultiBlocProvider(
         providers: [
           BlocProvider.value(value: _apiBloc),
           BlocProvider.value(value: _settingsBloc),
         ],
-        child: BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
+        child: BlocConsumer<SettingsBloc, SettingsState>(
+            listener: (context, state) {
+          // if (context.locale.toString() == 'en_US' &&
+          //     state.value['language'] != 'English') {
+            context.locale = Locale('zh', 'CN');
+          // }
+        }, builder: (context, state) {
           return MaterialApp(
             title: 'Reed',
             debugShowCheckedModeBanner: false,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
             theme: ThemeData(
-                brightness: state.isDarkMode ? Brightness.dark : Brightness.light,
-                primaryColor: state.isDarkMode ? Colors.black : Colors.deepOrange,
+                brightness: state.values['isDarkMode'] == true
+                    ? Brightness.dark
+                    : Brightness.light,
+                primaryColor: state.values['isDarkMode'] == true
+                    ? Colors.black
+                    : Colors.deepOrange,
                 primaryColorDark: Colors.black,
                 primaryColorLight: Colors.white,
                 // iconTheme: IconThemeData(color: Colors.black54),
@@ -67,12 +82,23 @@ class _AppState extends State<App> {
                 return _renderHome(context, state);
               }
               if (state is APICredentialLoading) {
-                return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
+                return Center(
+                    child: CircularProgressIndicator(strokeWidth: 2.0));
               }
               return LoginScene();
             }),
           );
-        })
-        );
+        }));
+  }
+}
+
+class AppWithLocalization extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return EasyLocalization(
+        supportedLocales: [Locale('en', 'US')],
+        path: 'assets/i18n',
+        fallbackLocale: Locale('en', 'US'),
+        child: App());
   }
 }

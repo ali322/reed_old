@@ -1,55 +1,60 @@
 part of bloc;
 
 abstract class SettingsEvent extends Equatable {
-  const SettingsEvent();
   @override
   List<Object> get props => [];
 }
 
 class LoadSettings extends SettingsEvent {}
 
-class SettingsChangeDarkMode extends SettingsEvent {
-  final bool truthy;
-  SettingsChangeDarkMode({@required this.truthy}) : assert(truthy != null);
+class SettingsChanged extends SettingsEvent {
+  final String key;
+  final dynamic value;
+  SettingsChanged({@required this.key, @required this.value})
+      : assert(key != null),
+        assert(value != null);
   @override
-  List<Object> get props => [truthy];
+  List<Object> get props => [key, value];
 }
 
 class SettingsState extends Equatable {
-  final bool isDarkMode;
+  final Map<String, dynamic> values;
 
-  const SettingsState({@required this.isDarkMode});
+  const SettingsState({@required this.values});
 
   @override
-  List<Object> get props => [isDarkMode];
+  List<Object> get props => [values];
 }
 
 class SettingsInitial extends SettingsState {
-  final bool isDarkMode = false;
+  final Map<String, dynamic> values = {
+    'isDarkMode': false,
+    'language': 'English'
+  };
 
   @override
-  List<Object> get props => [isDarkMode];
+  List<Object> get props => [values];
 }
 
 class SettingsLoadSuccess extends SettingsState {
-  final bool isDarkMode;
+  final Map<String, dynamic> values;
 
-  const SettingsLoadSuccess({@required this.isDarkMode})
-      : assert(isDarkMode != null);
+  const SettingsLoadSuccess({@required this.values}) : assert(values != null);
 
   @override
-  List<Object> get props => [isDarkMode];
+  List<Object> get props => [values];
 }
 
-class SettingsLoadFailure extends SettingsState{}
+class SettingsLoadFailure extends SettingsState {}
 
-class SettingsChanged extends SettingsState {
-  final bool isDarkMode;
-
-  SettingsChanged({this.isDarkMode});
-
+class SettingsChangeSuccess extends SettingsState {
+  final String key;
+  final dynamic value;
+  SettingsChangeSuccess({@required this.key, @required this.value})
+      : assert(key != null),
+        assert(value != null);
   @override
-  List<Object> get props => [isDarkMode];
+  List<Object> get props => [key, value];
 }
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
@@ -62,14 +67,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   @override
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
-    if (event is SettingsChangeDarkMode) {
-      await repository.saveSettings(isDarkMode: event.truthy);
-      yield SettingsChanged(isDarkMode: event.truthy);
+    if (event is SettingsChanged) {
+      await repository.saveSettings(key: event.key, value: event.value);
+      yield SettingsChangeSuccess(key: event.key, value: event.value);
     }
     if (event is LoadSettings) {
       final _ret = await repository.loadSettings();
       if (_ret != null) {
-        yield SettingsLoadSuccess(isDarkMode: _ret['isDarkMode']);
+        yield SettingsLoadSuccess(values: _ret);
       }
     }
   }

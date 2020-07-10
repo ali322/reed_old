@@ -6,11 +6,11 @@ class SettingsRepository {
     return _ret != null ? json.decode(_ret) as Map<String, dynamic> : null;
   }
 
-  Future<void> saveSettings({bool isDarkMode}) {
+  Future<void> saveSettings({String key, dynamic value}) {
     return storage.write(
         key: 'settings',
         value: jsonEncode(<String, dynamic>{
-          'isDarkMode': isDarkMode,
+          key: value,
         }));
   }
 }

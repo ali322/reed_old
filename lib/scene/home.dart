@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/model/model.dart';
@@ -96,7 +97,7 @@ class _HomeState extends State<HomeScene> {
                         children: <Widget>[
                           Icon(Icons.adjust),
                           SizedBox(height: 6.0),
-                          Text('Unread')
+                          Text('Unread'.tr())
                         ])),
               ),
               Expanded(
@@ -110,7 +111,7 @@ class _HomeState extends State<HomeScene> {
                         children: <Widget>[
                           Icon(Icons.public),
                           SizedBox(height: 6.0),
-                          Text('All')
+                          Text('All'.tr())
                         ])),
               ),
               Expanded(
@@ -124,7 +125,7 @@ class _HomeState extends State<HomeScene> {
                         children: <Widget>[
                           Icon(Icons.favorite_border),
                           SizedBox(height: 6.0),
-                          Text('Favorite')
+                          Text('Favorite'.tr())
                         ])),
               ),
             ]),
