@@ -56,6 +56,8 @@ class _AppState extends State<App> {
             theme: ThemeData(
                 brightness: state.isDarkMode ? Brightness.dark : Brightness.light,
                 primaryColor: state.isDarkMode ? Colors.black : Colors.deepOrange,
+                primaryColorDark: Colors.black,
+                primaryColorLight: Colors.white,
                 // iconTheme: IconThemeData(color: Colors.black54),
                 // hintColor: Colors.black54,
                 visualDensity: VisualDensity.adaptivePlatformDensity),
