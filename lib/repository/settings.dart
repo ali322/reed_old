@@ -2,7 +2,6 @@ part of repository;
 
 class SettingsRepository {
   Future<Map<String, dynamic>> loadSettings() async {
-    await storage.deleteAll();
     final _ret = await storage.read(key: 'settings');
     return _ret != null ? json.decode(_ret) as Map<String, dynamic> : null;
   }

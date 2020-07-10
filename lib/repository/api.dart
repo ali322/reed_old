@@ -2,7 +2,7 @@ part of repository;
 
 class APIRepository {
   Future<Map<String, dynamic>> loadAPI() async {
-    await storage.deleteAll();
+    // await storage.deleteAll();
     final _ret = await storage.read(key: 'api');
     return _ret != null ? json.decode(_ret) as Map<String, dynamic> : null;
   }

@@ -55,29 +55,31 @@ class SideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: BlocBuilder<FeedsBloc, FeedsState>(
-      builder: (BuildContext context, FeedsState state) {
-        if (state is FeedsFetchSuccess) {
-          final _categories = state.categories;
-          return Container(
-              padding: const EdgeInsets.only(left: 15.0, right: 10.0),
-              child: Column(children: [
-                SizedBox(height: 40.0),
-                Expanded(child: _renderCategories(context, _categories)),
-                ListTile(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SettingsScene()
-                    ));
-                  },
-                  dense: true,
-                  title: Text('Setting'),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
-                )
-              ]));
-        }
-        return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
-      },
-    ));
+    return SafeArea(
+      bottom: true,
+      child: Container(child: BlocBuilder<FeedsBloc, FeedsState>(
+        builder: (BuildContext context, FeedsState state) {
+          if (state is FeedsFetchSuccess) {
+            final _categories = state.categories;
+            return Container(
+                padding: const EdgeInsets.only(left: 15.0, right: 10.0),
+                child: Column(children: [
+                  SizedBox(height: 40.0),
+                  Expanded(child: _renderCategories(context, _categories)),
+                  ListTile(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => SettingsScene()));
+                    },
+                    dense: true,
+                    title: Text('Setting'),
+                    trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
+                  )
+                ]));
+          }
+          return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
+        },
+      ))
+    );
   }
 }

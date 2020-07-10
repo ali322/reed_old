@@ -49,24 +49,28 @@ class _AppState extends State<App> {
           BlocProvider.value(value: _apiBloc),
           BlocProvider.value(value: _settingsBloc),
         ],
-        child: MaterialApp(
-          title: 'Reed',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-              primarySwatch: Colors.deepOrange,
-              iconTheme: IconThemeData(color: Colors.black54),
-              hintColor: Colors.black54,
-              visualDensity: VisualDensity.adaptivePlatformDensity),
-          home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
-            if (state is APICredentialSaveSuccess ||
-                state is APICredentialLoadSuccess) {
-              return _renderHome(context, state);
-            }
-            if (state is APICredentialLoading) {
-              return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
-            }
-            return LoginScene();
-          }),
-        ));
+        child: BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
+          return MaterialApp(
+            title: 'Reed',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+                brightness: state.isDarkMode ? Brightness.dark : Brightness.light,
+                primaryColor: state.isDarkMode ? Colors.black : Colors.deepOrange,
+                // iconTheme: IconThemeData(color: Colors.black54),
+                // hintColor: Colors.black54,
+                visualDensity: VisualDensity.adaptivePlatformDensity),
+            home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
+              if (state is APICredentialSaveSuccess ||
+                  state is APICredentialLoadSuccess) {
+                return _renderHome(context, state);
+              }
+              if (state is APICredentialLoading) {
+                return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
+              }
+              return LoginScene();
+            }),
+          );
+        })
+        );
   }
 }

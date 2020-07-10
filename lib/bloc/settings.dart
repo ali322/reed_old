@@ -8,9 +8,9 @@ abstract class SettingsEvent extends Equatable {
 
 class LoadSettings extends SettingsEvent {}
 
-class SettingsDarkModeChanged extends SettingsEvent {
+class SettingsChangeDarkMode extends SettingsEvent {
   final bool truthy;
-  SettingsDarkModeChanged({@required this.truthy}) : assert(truthy != null);
+  SettingsChangeDarkMode({@required this.truthy}) : assert(truthy != null);
   @override
   List<Object> get props => [truthy];
 }
@@ -62,7 +62,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   @override
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
-    if (event is SettingsDarkModeChanged) {
+    if (event is SettingsChangeDarkMode) {
       await repository.saveSettings(isDarkMode: event.truthy);
       yield SettingsChanged(isDarkMode: event.truthy);
     }
