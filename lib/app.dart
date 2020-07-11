@@ -52,12 +52,11 @@ class _AppState extends State<App> {
           BlocProvider.value(value: _settingsBloc),
         ],
         child: BlocConsumer<SettingsBloc, SettingsState>(
-          listener: (context, state) {
-            if(state is SettingsChangeSuccess && state.key == 'language') {
-              context.locale = Locale('zh', 'CN');
-            }
-          },
-         builder: (context, state) {
+            listener: (context, state) {
+          if (state is SettingsChangeSuccess && state.key == 'language') {
+            context.locale = Locale('zh', 'CN');
+          }
+        }, builder: (context, state) {
           return MaterialApp(
             title: 'Reed',
             debugShowCheckedModeBanner: false,
