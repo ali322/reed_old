@@ -3,6 +3,10 @@
 
 Simple RSS Reader based on [Miniflux](https://miniflux.app/) API
 
+## Download
+
+go to [release page](https://github.com/ali322/reed/releases) download app
+
 ## ScreenShot
 
 - Lignt Mode
