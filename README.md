@@ -1,16 +1,47 @@
-# reed
+# Reed
+[![Build Status](https://travis-ci.org/ali322/reed.svg?branch=master)](https://travis-ci.org/ali322/reed)
 
-Simple RSS Reader
+Simple RSS Reader based on [Miniflux](https://miniflux.app/) API
 
-## Getting Started
+## ScreenShot
 
-This project is a starting point for a Flutter application.
+![1](screenshot/1.png)
+![2](screenshot/2.png)
+![3](screenshot/3.png)
+![4](screenshot/4.png)
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- support dark mode
+- i18n enabled
+- simple and clean theme
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Develop
+make sure finish [install Flutter](https://flutter.io/get-started/install/) successful
+
+1. clone this repo
+`git clone https://github.com/ali322/reed`
+2. install all the packages
+`flutter packages get`
+3. run the app in simulator on your own
+`flutter run`
+
+## Packages in using
+Reed build on following packages
+* [http](https://pub.dev/packages/http)
+* [bloc](https://pub.dev/packages/bloc)
+* [flutter_html](https://pub.dev/packages/flutter_html)
+* [easy_localization](https://pub.dev/packages/easy_localization)
+* [flutter_secure_storage](https://pub.dev/packages/flutter_secure_storage)
+* [url_launcher](https://pub.dev/packages/url_launcher)
+
+
+## Todo
+
+- finish more scenes
+- fix some unknow bugs
+
+
+## License
+
+[MIT License](http://en.wikipedia.org/wiki/MIT_License)
