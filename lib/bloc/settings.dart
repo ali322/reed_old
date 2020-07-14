@@ -29,7 +29,10 @@ class SettingsState extends Equatable {
 class SettingsInitial extends SettingsState {
   final Map<String, dynamic> values = {
     'isDarkMode': false,
-    'language': 'English'
+    'language': 'English',
+    'fontSize': 14.0,
+    'letterSpacing': 0.0,
+    'bold': false
   };
 
   @override
@@ -50,11 +53,14 @@ class SettingsLoadFailure extends SettingsState {}
 class SettingsChangeSuccess extends SettingsState {
   final String key;
   final dynamic value;
-  SettingsChangeSuccess({@required this.key, @required this.value})
+  final Map<String, dynamic> values;
+  SettingsChangeSuccess(
+      {@required this.key, @required this.value, @required this.values})
       : assert(key != null),
-        assert(value != null);
+        assert(value != null),
+        assert(values != null);
   @override
-  List<Object> get props => [key, value];
+  List<Object> get props => [key, value, values];
 }
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
@@ -68,8 +74,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   @override
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
     if (event is SettingsChanged) {
-      await repository.saveSettings(key: event.key, value: event.value);
-      yield SettingsChangeSuccess(key: event.key, value: event.value);
+      final _next = await repository.saveSettings(
+          key: event.key, value: event.value, values: state.values);
+      yield SettingsChangeSuccess(
+          key: event.key, value: event.value, values: _next);
     }
     if (event is LoadSettings) {
       final _ret = await repository.loadSettings();

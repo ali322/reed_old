@@ -14,12 +14,13 @@ class EntryRepository {
       {Feed feed,
       int lastRefreshedAt,
       String search,
+      String direction = 'desc',
       EntryStatus status = EntryStatus.All}) async {
     String _url =
-        '$baseURL/entries?order=published_at&direction=desc&after=$lastRefreshedAt';
+        '$baseURL/entries?order=published_at&direction=$direction&after=$lastRefreshedAt';
     if (feed != null) {
       _url =
-          '$baseURL/feeds/${feed.id}/entries?order=published_at&direction=desc&after=$lastRefreshedAt';
+          '$baseURL/feeds/${feed.id}/entries?order=published_at&direction=$direction&after=$lastRefreshedAt';
     }
     if (status == EntryStatus.UnReaded) {
       _url += '&status=unread';
@@ -45,6 +46,7 @@ class EntryRepository {
 
   Future<Entry> fetchEntry({int id}) async {
     http.Response ret = await APIClient(apiKey).get('$baseURL/entries/$id');
+    // print('$baseURL/entries/$id');
     if (ret.statusCode != 200) {
       throw ("fetch entry failed");
     } else {

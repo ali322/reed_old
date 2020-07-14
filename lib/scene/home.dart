@@ -9,6 +9,9 @@ import 'package:reed/repository/repository.dart';
 import 'package:reed/scene/entries.dart';
 import 'package:reed/scene/sidebar.dart';
 
+import '../bloc/bloc.dart';
+import '../repository/repository.dart';
+
 class HomeScene extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -19,9 +22,11 @@ class HomeScene extends StatefulWidget {
 class _HomeState extends State<HomeScene> {
   FeedsBloc _feedsBloc;
   EntriesBloc _entriesBloc;
+  MeBloc _meBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Completer<void> _completer;
   String _title = 'All';
+  String _sortDirection = 'desc';
   Feed _selectedFeed;
 
   @override
@@ -36,9 +41,13 @@ class _HomeState extends State<HomeScene> {
     _feedsBloc = FeedsBloc(repository: _feedsRepository);
     _feedsBloc.add(FeedsEvent.FetchFeeds);
 
-    EntryRepository _repository = context.repository<EntryRepository>();
-    _entriesBloc = EntriesBloc(repository: _repository);
+    EntryRepository _entryRepository = context.repository<EntryRepository>();
+    _entriesBloc = EntriesBloc(repository: _entryRepository);
     _entriesBloc.add(FetchEntries());
+
+    UserRepository _userRepository = context.repository<UserRepository>();
+    _meBloc = MeBloc(repository: _userRepository);
+    _meBloc.add(FetchMe());
   }
 
   void _openDrawer() {
@@ -68,6 +77,7 @@ class _HomeState extends State<HomeScene> {
         providers: [
           BlocProvider.value(value: _feedsBloc),
           BlocProvider.value(value: _entriesBloc),
+          BlocProvider.value(value: _meBloc)
         ],
         child: Scaffold(
           key: _scaffoldKey,
@@ -76,6 +86,30 @@ class _HomeState extends State<HomeScene> {
             title: Text(_title),
             elevation: 0.5,
             leading: IconButton(icon: Icon(Icons.menu), onPressed: _openDrawer),
+            actions: <Widget>[
+              PopupMenuButton(
+                icon: Icon(Icons.sort),
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                onSelected: (String val) {
+                  setState(() {
+                    _sortDirection = val;
+                  });
+                  _entriesBloc.add(SortEntries(direction: val));
+                },
+                itemBuilder: (context) => [
+                  CheckedPopupMenuItem(
+                    checked: _sortDirection == 'desc',
+                    value: 'desc',
+                    child: Text('Newest to Oldest'.tr()),
+                  ),
+                  CheckedPopupMenuItem(
+                    checked: _sortDirection == 'asc',
+                    value: 'asc',
+                    child: Text('Oldest to Newest'.tr()),
+                  )
+                ],
+              )
+            ],
           ),
           drawer: Drawer(
               child: Container(
@@ -95,9 +129,10 @@ class _HomeState extends State<HomeScene> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          SizedBox(height: 2.0),
                           Icon(Icons.adjust),
-                          SizedBox(height: 6.0),
-                          Text('Unread'.tr())
+                          SizedBox(height: 4.0),
+                          Text('Unread'.tr(), style: TextStyle(fontSize: 14.0))
                         ])),
               ),
               Expanded(
@@ -109,9 +144,10 @@ class _HomeState extends State<HomeScene> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          SizedBox(height: 2.0),
                           Icon(Icons.public),
-                          SizedBox(height: 6.0),
-                          Text('All'.tr())
+                          SizedBox(height: 4.0),
+                          Text('All'.tr(), style: TextStyle(fontSize: 14.0))
                         ])),
               ),
               Expanded(
@@ -123,9 +159,11 @@ class _HomeState extends State<HomeScene> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          SizedBox(height: 2.0),
                           Icon(Icons.favorite_border),
-                          SizedBox(height: 6.0),
-                          Text('Favorite'.tr())
+                          SizedBox(height: 4.0),
+                          Text('Favorite'.tr(),
+                              style: TextStyle(fontSize: 14.0))
                         ])),
               ),
             ]),

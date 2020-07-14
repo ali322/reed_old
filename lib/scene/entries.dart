@@ -5,6 +5,8 @@ import 'package:reed/model/model.dart';
 import 'package:reed/repository/repository.dart';
 import 'package:reed/scene/entry.dart';
 
+import '../bloc/bloc.dart';
+
 class EntriesScene extends StatelessWidget {
   Widget _renderEntries(List<Entry> entries) {
     return ListView.builder(
@@ -22,7 +24,7 @@ class EntriesScene extends StatelessWidget {
           },
           title: Text(_entry.title, style: TextStyle(fontSize: 14.0)),
           subtitle: Row(children: <Widget>[
-            Text(_entry.author,
+            Text(_entry.author != '' ? _entry.author : _entry.feed.title,
                 style: TextStyle(fontSize: 12.0, color: Colors.grey)),
             SizedBox(width: 12.0),
             Text(fromNow(_entry.publishedAt),
@@ -36,16 +38,9 @@ class EntriesScene extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // color: Theme.of(context).brightness == Brightness.light
-      //     ? Theme.of(context).primaryColorLight
-      //     : Theme.of(context).primaryColorDark,
       child: BlocBuilder<EntriesBloc, EntriesState>(
         builder: (BuildContext context, EntriesState state) {
-          if (state is EntriesFetchSuccess) {
-            final _entries = state.entries;
-            return _renderEntries(_entries);
-          }
-          if (state is EntriesRefreshSuccess) {
+          if (state is EntriesFetchSuccess || state is EntriesRefreshSuccess || state is EntriesSortSuccess) {
             final _entries = state.entries;
             return _renderEntries(_entries);
           }

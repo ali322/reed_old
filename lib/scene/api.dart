@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 
-class LoginScene extends StatefulWidget {
+class APIScene extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _LoginState();
+  State<StatefulWidget> createState() => _APIState();
 }
 
-class _LoginState extends State<LoginScene> {
+class _APIState extends State<APIScene> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
   bool _isSubmiting = false;

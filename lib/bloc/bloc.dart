@@ -14,3 +14,4 @@ part 'entries.dart';
 part 'api.dart';
 part 'entry.dart';
 part 'settings.dart';
+part 'me.dart';

@@ -11,6 +11,7 @@ part 'feed.dart';
 part 'entry.dart';
 part 'api.dart';
 part 'settings.dart';
+part 'user.dart';
 
 final storage = new FlutterSecureStorage();
 

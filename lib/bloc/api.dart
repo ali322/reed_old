@@ -23,6 +23,8 @@ class SaveAPICredential extends APIEvent {
 
 class LoadAPICredential extends APIEvent {}
 
+class ResetAPICredential extends APIEvent {}
+
 abstract class APIState extends Equatable {
   const APIState();
   @override
@@ -98,6 +100,9 @@ class APIBloc extends Bloc<APIEvent, APIState> {
       } else {
         yield APICredentialLoadFailure();
       }
+    }
+    if (event is ResetAPICredential) {
+      yield APIInitial();
     }
   }
 }

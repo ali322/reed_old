@@ -1,8 +1,11 @@
 library model;
 
+import 'package:easy_localization/easy_localization.dart';
+
 part 'category.dart';
 part 'feed.dart';
 part 'entry.dart';
+part 'user.dart';
 
 String fromNow(datetime) {
   final _now = new DateTime.now();
@@ -11,13 +14,13 @@ String fromNow(datetime) {
       : DateTime.fromMillisecondsSinceEpoch(datetime * 1000);
   final _diff = _now.difference(_datetime);
   if (_diff.inMinutes < 60) {
-    return '${_diff.inMinutes < 0 ? 0 : _diff.inMinutes}分钟之前';
+    return '${_diff.inMinutes < 0 ? 0 : _diff.inMinutes} ${"minutes ago".tr()}';
   } else if (_diff.inHours < 10) {
-    return '${_diff.inHours} 小时以前';
+    return '${_diff.inHours} ${"hours ago".tr()}';
   } else {
     _datetime = _datetime.toLocal();
     // _datetime = _datetime.add(new Duration(hours: 8));
-    return '${_datetime.year}年${fixDatetime(_datetime.month)}月${fixDatetime(_datetime.day)}日 ${fixDatetime(_datetime.hour)}:${fixDatetime(_datetime.minute)}:${fixDatetime(_datetime.second)}';
+    return '${_datetime.year}-${fixDatetime(_datetime.month)}-${fixDatetime(_datetime.day)} ${fixDatetime(_datetime.hour)}:${fixDatetime(_datetime.minute)}:${fixDatetime(_datetime.second)}';
   }
 }
 

@@ -1,5 +1,26 @@
 {
   "All": "全部",
   "Unread": "未读",
-  "Favorite": "收藏"
+  "Favorite": "收藏",
+  "Settings": "设置",
+  "Dark Mode": "暗黑模式",
+  "Language": "语言",
+  "General": "常规",
+  "minutes ago": "分钟之前",
+  "hours ago": "小时之前",
+  "Copy Link": "拷贝链接",
+  "Open In Browser": "在浏览器中打开",
+  "Article Link copied to clipboard": "文章链接已拷贝至剪贴板",
+  "Article Link open failed": "文章链接打开失败",
+  "Newest to Oldest": "从新到旧",
+  "Oldest to Newest": "从旧到新",
+  "Reset": "重置",
+  "Are you sure to reset?":"是否确认重置?",
+  "Yes": "是",
+  "No": "否",
+  "FontSize":"字体大小",
+  "LetterSpacing":"字间距",
+  "Bold": "加粗",
+  "Read": "阅读",
+  "System": "系统"
 }

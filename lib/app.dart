@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/repository/repository.dart';
 import 'package:reed/scene/home.dart';
-import 'package:reed/scene/login.dart';
+import 'package:reed/scene/api.dart';
 
 import 'bloc/bloc.dart';
 import 'repository/repository.dart';
@@ -39,13 +39,16 @@ class _AppState extends State<App> {
       RepositoryProvider<EntryRepository>(
         create: (context) =>
             EntryRepository(apiKey: state.apiKey, baseURL: state.baseURL),
+      ),
+      RepositoryProvider<UserRepository>(
+        create: (context) =>
+            UserRepository(apiKey: state.apiKey, baseURL: state.baseURL),
       )
     ], child: HomeScene());
   }
 
   @override
   Widget build(BuildContext context) {
-    print(context.locale.toLanguageTag());
     return MultiBlocProvider(
         providers: [
           BlocProvider.value(value: _apiBloc),
@@ -54,7 +57,11 @@ class _AppState extends State<App> {
         child: BlocConsumer<SettingsBloc, SettingsState>(
             listener: (context, state) {
           if (state is SettingsChangeSuccess && state.key == 'language') {
-            context.locale = Locale('zh', 'CN');
+            if (state.value == 'Chinese') {
+              context.locale = Locale('zh', 'CN');
+            } else {
+              context.locale = Locale('en', 'US');
+            }
           }
         }, builder: (context, state) {
           return MaterialApp(
@@ -84,7 +91,7 @@ class _AppState extends State<App> {
                 return Center(
                     child: CircularProgressIndicator(strokeWidth: 2.0));
               }
-              return LoginScene();
+              return APIScene();
             }),
           );
         }));
@@ -95,7 +102,7 @@ class AppWithLocalization extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EasyLocalization(
-        supportedLocales: [Locale('en', 'US')],
+        supportedLocales: [Locale('en', 'US'), Locale('zh', 'CN')],
         path: 'assets/i18n',
         fallbackLocale: Locale('en', 'US'),
         child: App());

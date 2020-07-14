@@ -1,5 +1,26 @@
 {
   "All": "All",
   "Unread": "Unread",
-  "Favorite": "Favorite"
+  "Favorite": "Favorite",
+  "Settings": "Settings",
+  "Dark Mode": "Dark Mode",
+  "Language": "Language",
+  "General": "General",
+  "minutes ago": "minutes ago",
+  "hours ago": "hours ago",
+  "Copy Link": "Copy Link",
+  "Open In Browser": "Open In Browser",
+  "Article Link copied to clipboard": "Article Link copied to clipboard",
+  "Article Link open failed": "Article Link open failed",
+  "Newest to Oldest": "Newest to Oldest",
+  "Oldest to Newest": "Oldest to Newest",
+  "Reset": "Reset",
+  "Are you sure to reset?":"Are you sure to reset?",
+  "Yes": "Yes",
+  "No": "No",
+  "FontSize":"FontSize",
+  "Read": "Read",
+  "LetterSpacing":"LetterSpacing",
+  "Bold": "Bold",
+  "System": "System"
 }

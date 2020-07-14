@@ -21,6 +21,11 @@ class RefreshEntries extends EntriesEvent {
   const RefreshEntries({this.feed, this.lastRefreshedAt});
 }
 
+class SortEntries extends EntriesEvent {
+  final String direction;
+  const SortEntries({@required this.direction}) : assert(direction != null);
+}
+
 abstract class EntriesState extends Equatable {
   final int total;
   final List<Entry> entries;
@@ -68,6 +73,21 @@ class EntriesRefreshSuccess extends EntriesState {
   List<Object> get props => [entries, total, lastFetchedAt];
 }
 
+class EntriesSortSuccess extends EntriesState {
+  final List<Entry> entries;
+  final int total;
+  final int lastFetchedAt;
+  const EntriesSortSuccess(
+      {@required this.entries,
+      @required this.total,
+      @required this.lastFetchedAt})
+      : assert(entries != null),
+        assert(lastFetchedAt != null),
+        assert(total != null);
+  @override
+  List<Object> get props => [entries, total, lastFetchedAt];
+}
+
 class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
   final EntryRepository repository;
 
@@ -103,6 +123,19 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
       } catch (e) {
         yield EntriesFetchFailure();
       }
+    }
+    if (event is SortEntries) {
+      List<Entry> _next = state.entries.sublist(0);
+      _next.sort((a, b) {
+        return event.direction == 'asc'? DateTime.parse(a.publishedAt)
+            .compareTo(DateTime.parse(b.publishedAt)) : DateTime.parse(b.publishedAt)
+            .compareTo(DateTime.parse(a.publishedAt));
+      });
+      print(_next.map((e) => e.publishedAt).toList());
+      yield EntriesSortSuccess(
+          entries: _next,
+          total: state.total,
+          lastFetchedAt: state.lastFetchedAt);
     }
   }
 }
