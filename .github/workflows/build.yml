@@ -14,7 +14,7 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'
-    - run: echo $SIGNING_KEY
+    - run: echo "$SIGNING_KEY" | base64 -d > android/app/key.jks
       env:
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
     - uses: subosito/flutter-action@v1
@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
     - name: Build apk
-      run: flutter build --release --split-per-abi
+      run: flutter build apk --release --split-per-abi
       env:
         KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
