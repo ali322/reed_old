@@ -18,34 +18,32 @@ class SideBar extends StatelessWidget {
         if (state is MeFetchSuccess) {
           final _user = state.user;
           return Container(
-            padding: const EdgeInsets.only(bottom: 30.0),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: Divider.createBorderSide(context)
-              )
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: <Widget>[
-                  CircleAvatar(
-                    radius: 20.0,
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: Text(_user.username[0].toUpperCase()),
-                  ),
-                  SizedBox(width: 16.0),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(_user.username),
-                      SizedBox(height: 2.0),
-                      Text(fromNow(_user.lastLoginAt), style: TextStyle(fontSize: 12.0, color: Colors.grey))
-                    ],
-                  )
-                ],
+              decoration: BoxDecoration(
+                border: Border(bottom: Divider.createBorderSide(context)),
               ),
-            )
-          );
+              child: Padding(
+                padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 70.0, bottom: 30.0),
+                child: Row(
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 20.0,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: Text(_user.username[0].toUpperCase()),
+                    ),
+                    SizedBox(width: 16.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(_user.username),
+                        SizedBox(height: 2.0),
+                        Text(fromNow(_user.lastLoginAt),
+                            style:
+                                TextStyle(fontSize: 12.0, color: Colors.grey))
+                      ],
+                    )
+                  ],
+                ),
+              ));
         }
         return Container();
       },
@@ -105,26 +103,30 @@ class SideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        bottom: true,
-        child: Container(
-            child: Container(
-                padding: const EdgeInsets.only(left: 15.0, right: 10.0),
-                child: Column(children: [
-                  SizedBox(height: 40.0),
-                  _renderUser(context),
-                  Expanded(child: _renderCategories(context)),
-                  ListTile(
-                    onTap: () async {
-                      await Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SettingsScene()));
-                      Navigator.of(context).pop();
-                    },
-                    dense: true,
-                    title:
-                        Text('Settings'.tr(), style: TextStyle(fontSize: 14.0)),
-                    trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
-                  )
-                ]))));
+    return Container(
+        child: Column(children: [
+          _renderUser(context),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _renderCategories(context)
+            ),
+          ),
+          SafeArea(
+            bottom: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ListTile(
+                onTap: () async {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SettingsScene()));
+                },
+                dense: true,
+                title: Text('Settings'.tr(), style: TextStyle(fontSize: 14.0)),
+                trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
+              )
+            ),
+          )
+        ]));
   }
 }

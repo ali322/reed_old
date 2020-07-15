@@ -10,8 +10,6 @@ import 'package:reed/bloc/bloc.dart';
 import 'package:reed/repository/repository.dart';
 
 import '../bloc/bloc.dart';
-import '../bloc/bloc.dart';
-import '../bloc/bloc.dart';
 
 class EntryScene extends StatefulWidget {
   final int id;

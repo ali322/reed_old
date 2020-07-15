@@ -112,10 +112,8 @@ class _HomeState extends State<HomeScene> {
             ],
           ),
           drawer: Drawer(
-              child: Container(
-            alignment: Alignment.center,
             child: SideBar(onChange: _onSidebarChange),
-          )),
+          ),
           bottomNavigationBar: BottomAppBar(
               child: SizedBox(
             height: 64.0,

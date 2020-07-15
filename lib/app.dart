@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/repository/repository.dart';
 import 'package:reed/scene/home.dart';
-import 'package:reed/scene/api.dart';
+import 'package:reed/scene/authorize.dart';
 
 import 'bloc/bloc.dart';
 import 'repository/repository.dart';
@@ -91,7 +91,7 @@ class _AppState extends State<App> {
                 return Center(
                     child: CircularProgressIndicator(strokeWidth: 2.0));
               }
-              return APIScene();
+              return AuthorizeScene();
             }),
           );
         }));

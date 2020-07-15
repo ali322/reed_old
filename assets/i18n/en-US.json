@@ -22,5 +22,16 @@
   "Read": "Read",
   "LetterSpacing":"LetterSpacing",
   "Bold": "Bold",
-  "System": "System"
+  "System": "System",
+  "About": "About",
+  "Authorization": "Authorization",
+  "Made By {}": "Made By {}",
+  "Site URL": "Site URL",
+  "API Key": "API Key",
+  "Please input site url": "Please input site url",
+  "site url can not be empty": "site url can not be empty",
+  "api key can not be empty": "api key can not be empty",
+  "Please input api key": "Please input api key",
+  "Submit": "Submit",
+  "Submit Failed": "Submit Failed"
 }

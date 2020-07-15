@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:reed/bloc/bloc.dart';
 
-class APIScene extends StatefulWidget {
+class AuthorizeScene extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _APIState();
+  State<StatefulWidget> createState() => _AuthorizeState();
 }
 
-class _APIState extends State<APIScene> {
+class _AuthorizeState extends State<AuthorizeScene> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
   bool _isSubmiting = false;
-  TextEditingController _titleController = new TextEditingController();
   TextEditingController _urlController = new TextEditingController();
   TextEditingController _keyController = new TextEditingController();
 
@@ -19,15 +20,28 @@ class _APIState extends State<APIScene> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
-        backgroundColor: Colors.white,
         resizeToAvoidBottomPadding: false,
+        appBar: AppBar(
+            brightness: Theme.of(context).brightness,
+            elevation: 0.0,
+            backgroundColor: Colors.transparent,
+            leading: Theme(
+              data: Theme.of(context)
+                  .copyWith(brightness: Theme.of(context).brightness),
+              child: IconButton(
+                icon: Icon(Icons.navigate_before),
+                onPressed: () {
+                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                },
+              ),
+            )),
         body: SafeArea(
             bottom: true,
             child: BlocListener<APIBloc, APIState>(
                 listener: (BuildContext context, APIState state) {
                   if (state is APICredentialSaveFailure) {
-                    Scaffold.of(context)
-                        .showSnackBar(SnackBar(content: Text('提交失败')));
+                    Scaffold.of(context).showSnackBar(
+                        SnackBar(content: Text('Submit Failed'.tr())));
                     setState(() {
                       _isSubmiting = false;
                     });
@@ -42,38 +56,23 @@ class _APIState extends State<APIScene> {
                         children: <Widget>[
                           Padding(
                             padding:
-                                const EdgeInsets.only(bottom: 20.0, top: 20.0),
+                                const EdgeInsets.only(bottom: 40.0, top: 60.0),
                             child: Column(
                               children: <Widget>[
-                                Icon(Icons.cloud, size: 60.0),
-                                SizedBox(height: 8.0),
-                                Text('Fever', style: TextStyle(fontSize: 18.0)),
+                                Image.asset('assets/image/REED_TEXT.png'),
                               ],
-                            ),
-                          ),
-                          TextFormField(
-                            controller: _titleController,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return '标题不能为空';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "请输入标题",
-                              hintStyle: TextStyle(fontSize: 14.0),
                             ),
                           ),
                           TextFormField(
                             controller: _urlController,
                             validator: (value) {
                               if (value.isEmpty) {
-                                return '地址不能为空';
+                                return 'site url can not be empty'.tr();
                               }
                               return null;
                             },
                             decoration: InputDecoration(
-                              hintText: "请输入API地址",
+                              hintText: "Please input site url".tr(),
                               hintStyle: TextStyle(fontSize: 14.0),
                             ),
                           ),
@@ -81,20 +80,20 @@ class _APIState extends State<APIScene> {
                             controller: _keyController,
                             validator: (value) {
                               if (value.isEmpty) {
-                                return 'API密钥不能为空';
+                                return 'api key can not be empty';
                               }
                               return null;
                             },
                             decoration: InputDecoration(
-                              hintText: "请输入API密钥",
+                              hintText: "Please input api key".tr(),
                               hintStyle: TextStyle(fontSize: 14.0),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20.0),
                             child: RaisedButton(
-                              child:
-                                  Text('提交', style: TextStyle(fontSize: 16.0)),
+                              child: Text('Submit'.tr(),
+                                  style: TextStyle(fontSize: 16.0)),
                               onPressed: _isSubmiting
                                   ? null
                                   : () {
@@ -104,12 +103,11 @@ class _APIState extends State<APIScene> {
                                         setState(() {
                                           _isSubmiting = true;
                                         });
-                                        final _title = _titleController.text;
                                         final _url = _urlController.text;
                                         final _key = _keyController.text;
                                         BlocProvider.of<APIBloc>(context).add(
                                             SaveAPICredential(
-                                                title: _title,
+                                                title: '',
                                                 apiKey: _key,
                                                 baseURL: _url));
                                       }

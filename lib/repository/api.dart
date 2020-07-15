@@ -16,4 +16,8 @@ class APIRepository {
           'title': title
         }));
   }
+
+  Future<void> deleteAPI() async {
+    return storage.delete(key: 'api');
+  }
 }

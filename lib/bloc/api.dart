@@ -102,6 +102,7 @@ class APIBloc extends Bloc<APIEvent, APIState> {
       }
     }
     if (event is ResetAPICredential) {
+      await repository.deleteAPI();
       yield APIInitial();
     }
   }

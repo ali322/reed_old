@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import './authorization.dart';
+import './about.dart';
 import '../bloc/bloc.dart';
 
 class SettingsScene extends StatefulWidget {
@@ -22,7 +24,7 @@ class _SettingsState extends State<SettingsScene> {
           leading: IconButton(
             icon: Icon(Icons.navigate_before),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).maybePop();
             },
           ),
         ),
@@ -81,10 +83,11 @@ class _SettingsState extends State<SettingsScene> {
                               context.bloc<SettingsBloc>().add(
                                   SettingsChanged(key: 'fontSize', value: val));
                             },
-                            items: <double>[12.0,14.0,16.0,18.0]
+                            items: <double>[12.0, 14.0, 16.0, 18.0]
                                 .map<DropdownMenuItem>((val) =>
                                     DropdownMenuItem(
-                                        child: Text(val.toString()), value: val))
+                                        child: Text(val.toString()),
+                                        value: val))
                                 .toList(),
                           ),
                         ),
@@ -96,13 +99,14 @@ class _SettingsState extends State<SettingsScene> {
                           trailing: DropdownButton(
                             value: state.values['letterSpacing'],
                             onChanged: (val) {
-                              context.bloc<SettingsBloc>().add(
-                                  SettingsChanged(key: 'letterSpacing', value: val));
+                              context.bloc<SettingsBloc>().add(SettingsChanged(
+                                  key: 'letterSpacing', value: val));
                             },
-                            items: <double>[0.0,2.0,4.0,6.0]
+                            items: <double>[0.0, 2.0, 4.0, 6.0]
                                 .map<DropdownMenuItem>((val) =>
                                     DropdownMenuItem(
-                                        child: Text(val.toString()), value: val))
+                                        child: Text(val.toString()),
+                                        value: val))
                                 .toList(),
                           ),
                         ),
@@ -117,8 +121,7 @@ class _SettingsState extends State<SettingsScene> {
                                   context.bloc<SettingsBloc>().add(
                                       SettingsChanged(
                                           key: 'isDarkMode', value: truthy));
-                                })
-                        ),
+                                })),
                       ],
                     ),
                     SettingsSection(
@@ -126,43 +129,29 @@ class _SettingsState extends State<SettingsScene> {
                       tiles: <Widget>[
                         ListTile(
                             onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content:
-                                          Text('Are you sure to reset?'.tr()),
-                                      actions: <Widget>[
-                                        FlatButton(
-                                          child: Text('Yes'.tr()),
-                                          onPressed: () {
-                                            Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 300), () {
-                                              context
-                                                  .bloc<APIBloc>()
-                                                  .add(ResetAPICredential());
-                                            });
-                                            Navigator.of(context).popUntil(
-                                                (route) => route.isFirst);
-                                          },
-                                        ),
-                                        FlatButton(
-                                          child: Text('No'.tr(),
-                                              style: TextStyle(
-                                                  color: Colors.grey)),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        )
-                                      ],
-                                    );
-                                  });
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => BlocProvider.value(
+                                    value: context.bloc<APIBloc>(),
+                                    child: AuthorizationScene(),
+                                  )));
                             },
                             dense: true,
-                            title: Center(child: Text('Reset'.tr(),
-                                style: TextStyle(fontSize: 16.0, color: Colors.redAccent))),
-                            ),
+                            leading: Icon(Icons.lock),
+                            title: Text('Authorization'.tr(),
+                                style: TextStyle(fontSize: 16.0)),
+                            trailing:
+                                Icon(Icons.navigate_next)),
+                        ListTile(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => AboutScene()));
+                            },
+                            dense: true,
+                            leading: Icon(Icons.info),
+                            title: Text('About'.tr(),
+                                style: TextStyle(fontSize: 16.0)),
+                            trailing:
+                                Icon(Icons.navigate_next)),
                       ],
                     )
                   ]),

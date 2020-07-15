@@ -22,5 +22,16 @@
   "LetterSpacing":"字间距",
   "Bold": "加粗",
   "Read": "阅读",
-  "System": "系统"
+  "System": "系统",
+  "About": "关于",
+  "Authorization": "授权",
+  "Made By {}": "开发者 {}",
+  "Site URL": "网址",
+  "API Key": "API密钥",
+  "Please input site url": "请输入网址",
+  "site url can not be empty": "网址不能为空",
+  "api key can not be empty": "api 密钥不能为空",
+  "Please input api key": "请输入 api 密钥",
+  "Submit": "提交",
+  "Submit Failed": "提交失败"
 }

@@ -1,5 +1,5 @@
 # Reed
-[![Build Status](https://travis-ci.org/ali322/reed.svg?branch=master)](https://travis-ci.org/ali322/reed)
+![.github/workflows/build.yml](https://github.com/ali322/reed/workflows/.github/workflows/build.yml/badge.svg)
 
 Simple RSS Reader based on [Miniflux](https://miniflux.app/) API
 
