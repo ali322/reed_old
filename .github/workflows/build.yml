@@ -16,21 +16,21 @@ jobs:
       with:
         java-version: '12.x'
     - run: echo -n "${{ secrets.SIGNING_KEY }}" | base64 -di > android/app/key.jks
-    # - uses: subosito/flutter-action@v1
-    #   with:
-    #     flutter-version: '1.17.5'
-    # - name: Install dependencies
-    #   run: flutter pub get
-    # - name: Build apk
-    #   run: flutter build apk --release --split-per-abi
-    #   env:
-    #     KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-    #     KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-    #     KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-    #     KEY_PATH: key.jks
+    - uses: subosito/flutter-action@v1
+      with:
+        flutter-version: '1.17.5'
+    - name: Install dependencies
+      run: flutter pub get
+    - name: Build apk
+      run: flutter build apk --release --split-per-abi
+      env:
+        KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PATH: key.jks
     - name: Add to Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "android/app/key.jks"
-        # artifacts: "build/app/outputs/apk/release/*.apk"
+        # artifacts: "android/app/key.jks"
+        artifacts: "build/app/outputs/apk/release/*.apk"
         token: ${{ secrets.TOKEN }}
