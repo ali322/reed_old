@@ -15,7 +15,7 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'
-    - run: echo -n "${{ secrets.SIGNING_KEY }}" | base64 -d
+    - run: echo -n "${{ secrets.SIGNING_KEY }}" | base64 -d > android/app/key.jks
     # - uses: subosito/flutter-action@v1
     #   with:
     #     flutter-version: '1.17.5'
