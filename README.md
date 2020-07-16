@@ -5,7 +5,7 @@ Simple RSS Reader based on [Miniflux](https://miniflux.app/) API
 
 ## Prerequirement
 
-- follow [Miniflux Documentation](https://miniflux.app/docs/installation.html) to deploy your service
+- follow [Miniflux Documentation](https://miniflux.app/docs/installation.html) to deploy your site
 - get api key from `Settings -> API Keys` of your site
 
 ## Download
