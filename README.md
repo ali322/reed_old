@@ -3,6 +3,11 @@
 
 Simple RSS Reader based on [Miniflux](https://miniflux.app/) API
 
+## Prerequirement
+
+- follow [Miniflux Documentation](https://miniflux.app/docs/installation.html) to deploy your service
+- get api key from `Settings -> API Keys` of your site
+
 ## Download
 
 go to [release page](https://github.com/ali322/reed/releases) download app
