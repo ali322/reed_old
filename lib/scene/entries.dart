@@ -17,12 +17,19 @@ class EntriesScene extends StatelessWidget {
         return ListTile(
           dense: true,
           onTap: () {
+            context
+                .bloc<EntriesBloc>()
+                .add(ChangeEntriesStatus(ids: [_entry.id], status: 'read'));
+            // _bloc.close();
             final _repository = context.repository<EntryRepository>();
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) => RepositoryProvider.value(
                     value: _repository, child: EntryScene(id: _entry.id))));
           },
-          title: Text(_entry.title, style: TextStyle(fontSize: 14.0)),
+          title: Text(_entry.title,
+              style: _entry.status != 'read'
+                  ? TextStyle(fontSize: 14.0)
+                  : TextStyle(fontSize: 14.0, color: Colors.grey)),
           subtitle: Row(children: <Widget>[
             Text(_entry.author != '' ? _entry.author : _entry.feed.title,
                 style: TextStyle(fontSize: 12.0, color: Colors.grey)),
@@ -40,7 +47,10 @@ class EntriesScene extends StatelessWidget {
     return Container(
       child: BlocBuilder<EntriesBloc, EntriesState>(
         builder: (BuildContext context, EntriesState state) {
-          if (state is EntriesFetchSuccess || state is EntriesRefreshSuccess || state is EntriesSortSuccess) {
+          if (state is EntriesFetchSuccess ||
+              state is EntriesRefreshSuccess ||
+              state is EntriesChangeSuccess ||
+              state is EntriesSortSuccess) {
             final _entries = state.entries;
             return _renderEntries(_entries);
           }

@@ -13,7 +13,9 @@ String fromNow(datetime) {
       ? DateTime.parse(datetime)
       : DateTime.fromMillisecondsSinceEpoch(datetime * 1000);
   final _diff = _now.difference(_datetime);
-  if (_diff.inMinutes < 60) {
+  if (_diff.inSeconds < 60) {
+    return '${_diff.inSeconds < 0 ? 0 : _diff.inSeconds} ${"seconds ago".tr()}';
+  } else if (_diff.inMinutes < 60) {
     return '${_diff.inMinutes < 0 ? 0 : _diff.inMinutes} ${"minutes ago".tr()}';
   } else if (_diff.inHours < 10) {
     return '${_diff.inHours} ${"hours ago".tr()}';

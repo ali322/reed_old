@@ -46,7 +46,7 @@ class _AboutState extends State<AboutScene> {
           child: Column(
             children: <Widget>[
               SizedBox(height: 20.0),
-              Image.asset('assets/image/REED_TEXT.png'),
+              Image.asset('assets/image/REED_TEXT.png', width: 200.0),
               SizedBox(height: 20.0),
               Text('v$_version',
                   style: TextStyle(fontSize: 14.0, color: Colors.grey)),

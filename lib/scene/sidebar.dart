@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:reed/bloc/bloc.dart';
@@ -34,7 +35,7 @@ class SideBar extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(_user.username),
+                        Text(_user.username, style: TextStyle(fontSize: 16.0)),
                         SizedBox(height: 2.0),
                         Text(fromNow(_user.lastLoginAt),
                             style:
@@ -53,13 +54,14 @@ class SideBar extends StatelessWidget {
   Widget _renderCategories(BuildContext context) {
     return BlocBuilder<FeedsBloc, FeedsState>(
       builder: (context, state) {
-        if (state is FeedsFetchSuccess) {
+        if (state is FeedsFetchSuccess || state is FeedsIconFetchSuccess || state is FeedsCalculateSuccess) {
           final _categories = state.categories;
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
             itemCount: _categories.length,
             itemBuilder: (BuildContext context, int i) {
               final _category = _categories[i];
-              if (_category.feeds.length == 0) {
+              if (_category.id == 1) {
                 return ListTile(
                   dense: true,
                   onTap: () {
@@ -67,12 +69,13 @@ class SideBar extends StatelessWidget {
                     Navigator.of(context).pop();
                   },
                   title: Container(
-                    child: Text(_category.title),
+                    child: Text('Unread Articles'.tr(), style: TextStyle(fontSize: 16.0)),
                   ),
+                  trailing: Text('${_category.unreadCount}', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
                 );
               }
               return ExpansionTile(
-                title: Text(_category.title),
+                title: Text(_category.title, style: TextStyle(fontSize: 16.0)),
                 children: _category.feeds
                     .map<Widget>((_feed) => InkWell(
                           onTap: () {
@@ -84,9 +87,20 @@ class SideBar extends StatelessWidget {
                                   vertical: 10.0, horizontal: 16.0),
                               child: Row(
                                 children: <Widget>[
-                                  Container(child: Icon(Icons.rss_feed)),
+                                  _feed.icon != null
+                                ? Image.memory(
+                                    base64Decode(_feed.icon
+                                        .split(';')[1]
+                                        .split(',')[1]),
+                                    width: 20,
+                                    height: 20,
+                                    fit: BoxFit.fill,
+                                    gaplessPlayback: true,
+                                  )
+                                : Container(child: Icon(Icons.rss_feed)),
                                   SizedBox(width: 12.0),
-                                  Expanded(child: Text(_feed.title))
+                                  Expanded(child: Text(_feed.title)),
+                                  Text('${_feed.unreadCount}', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
                                 ],
                               ),
                               alignment: Alignment.centerLeft),
@@ -122,7 +136,7 @@ class SideBar extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => SettingsScene()));
                 },
                 dense: true,
-                title: Text('Settings'.tr(), style: TextStyle(fontSize: 14.0)),
+                title: Text('Settings'.tr(), style: TextStyle(fontSize: 16.0)),
                 trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
               )
             ),

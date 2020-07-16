@@ -5,7 +5,8 @@ class Feed {
   final String title;
   final String url;
   final String siteURL;
-  final int iconID;
+  String icon;
+  int unreadCount;
   final bool isSpark;
   final String updatedAt;
   final int categoryID;
@@ -14,7 +15,6 @@ class Feed {
       {this.id,
       this.title,
       this.url,
-      this.iconID,
       this.categoryID,
       this.siteURL,
       this.isSpark,
@@ -24,9 +24,9 @@ class Feed {
       : this.id = json['id'],
         this.title = json['title'],
         this.url = json['feed_url'],
-        this.iconID = json['icon'] == null? null: json['icon']['icon_id'],
         this.categoryID = json['category']['id'],
         this.isSpark = json['is_spark'] == 1,
+        this.unreadCount = 0,
         this.siteURL = json['site_url'],
         this.updatedAt = fromNow(json['checked_at']);
 }

@@ -7,7 +7,7 @@ class Entry {
   final String url;
   final String content;
   final String publishedAt;
-  final bool isRead;
+  String status;
   final bool isStarred;
   final int feedID;
   final Feed feed;
@@ -19,7 +19,7 @@ class Entry {
       this.url,
       this.content,
       this.publishedAt,
-      this.isRead,
+      this.status,
       this.isStarred,
       this.feed,
       this.feedID});
@@ -31,7 +31,7 @@ class Entry {
         this.url = json['url'],
         this.content = json['content'],
         this.publishedAt = json['published_at'],
-        this.isRead = json['status'] == 'read',
+        this.status = json['status'],
         this.isStarred = json['starred'],
         this.feed = Feed.fromJSON(json['feed']),
         this.feedID = json['feed']['id'];

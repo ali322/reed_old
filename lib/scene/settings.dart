@@ -67,6 +67,24 @@ class _SettingsState extends State<SettingsScene> {
                                 .toList(),
                           ),
                         ),
+                        ListTile(
+                          dense: true,
+                          leading: Icon(Icons.file_download),
+                          title: Text('Fetch Pertime'.tr(),
+                              style: TextStyle(fontSize: 16.0)),
+                          trailing: DropdownButton(
+                            value: state.values['fetchPertime'],
+                            onChanged: (val) {
+                              context.bloc<SettingsBloc>().add(
+                                  SettingsChanged(key: 'fetchPertime', value: val));
+                            },
+                            items: <int>[1000, 2000,5000, 10000]
+                                .map<DropdownMenuItem>((val) =>
+                                    DropdownMenuItem(
+                                        child: Text('$val ${"Entries".tr()}'), value: val))
+                                .toList(),
+                          ),
+                        ),
                       ],
                     ),
                     SettingsSection(

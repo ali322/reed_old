@@ -13,14 +13,15 @@ class EntryRepository {
   Future<Map<String, dynamic>> fetchEntries(
       {Feed feed,
       int lastRefreshedAt,
+      int limit,
       String search,
       String direction = 'desc',
       EntryStatus status = EntryStatus.All}) async {
     String _url =
-        '$baseURL/entries?order=published_at&direction=$direction&after=$lastRefreshedAt';
+        '$baseURL/entries?order=published_at&limit=$limit&direction=$direction&after=$lastRefreshedAt';
     if (feed != null) {
       _url =
-          '$baseURL/feeds/${feed.id}/entries?order=published_at&direction=$direction&after=$lastRefreshedAt';
+          '$baseURL/feeds/${feed.id}/entries?order=published_at&limit=$limit&direction=$direction&after=$lastRefreshedAt';
     }
     if (status == EntryStatus.UnReaded) {
       _url += '&status=unread';
@@ -31,7 +32,6 @@ class EntryRepository {
     if (search != null) {
       _url += '&search=$search';
     }
-    // print('===>$_url');
     http.Response ret = await APIClient(apiKey).get(_url);
     if (ret.statusCode != 200) {
       throw ("fetch entries failed");
@@ -46,13 +46,22 @@ class EntryRepository {
 
   Future<Entry> fetchEntry({int id}) async {
     http.Response ret = await APIClient(apiKey).get('$baseURL/entries/$id');
-    // print('$baseURL/entries/$id');
     if (ret.statusCode != 200) {
       throw ("fetch entry failed");
     } else {
       ret.headers['content-type'] = 'application/json;charset=utf-8';
       var decoded = json.decode(ret.body) as Map<String, dynamic>;
       return Entry.fromJSON(decoded);
+    }
+  }
+
+  Future<void> changeEntriesStatus(List<int> ids, String status) async {
+    final ret = await APIClient(apiKey).put('$baseURL/entries',
+        headers: {"Content-Type": "application/json;charset=utf-8"},
+        body:
+            jsonEncode(<String, dynamic>{'entry_ids': ids, 'status': status}));
+    if (ret.statusCode != 204) {
+      throw ("change entries failed");
     }
   }
 }

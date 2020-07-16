@@ -13,6 +13,9 @@ import '../bloc/bloc.dart';
 import '../repository/repository.dart';
 
 class HomeScene extends StatefulWidget {
+  final Map<String, dynamic> settings;
+  const HomeScene({@required this.settings});
+
   @override
   State<StatefulWidget> createState() {
     return _HomeState();
@@ -28,6 +31,8 @@ class _HomeState extends State<HomeScene> {
   String _title = 'All';
   String _sortDirection = 'desc';
   Feed _selectedFeed;
+  EntryStatus _selectedStatus = EntryStatus.All;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -39,11 +44,12 @@ class _HomeState extends State<HomeScene> {
   void _fetchInitial() {
     FeedRepository _feedsRepository = context.repository<FeedRepository>();
     _feedsBloc = FeedsBloc(repository: _feedsRepository);
-    _feedsBloc.add(FeedsEvent.FetchFeeds);
+    _feedsBloc.add(FetchFeeds());
 
     EntryRepository _entryRepository = context.repository<EntryRepository>();
     _entriesBloc = EntriesBloc(repository: _entryRepository);
-    _entriesBloc.add(FetchEntries());
+    _entriesBloc.add(FetchEntries(
+        status: EntryStatus.UnReaded, limit: widget.settings['fetchPertime']));
 
     UserRepository _userRepository = context.repository<UserRepository>();
     _meBloc = MeBloc(repository: _userRepository);
@@ -63,11 +69,17 @@ class _HomeState extends State<HomeScene> {
       }
       _selectedFeed = feed;
     });
-    _entriesBloc.add(FetchEntries(feed: feed));
+    _entriesBloc.add(FetchEntries(
+        feed: feed,
+        status: EntryStatus.UnReaded,
+        limit: widget.settings['fetchPertime']));
   }
 
   Future<void> _onRefresh() {
-    _entriesBloc.add(RefreshEntries(feed: _selectedFeed));
+    _entriesBloc.add(RefreshEntries(
+        feed: _selectedFeed,
+        status: _selectedStatus,
+        limit: widget.settings['fetchPertime']));
     return _completer.future;
   }
 
@@ -112,60 +124,48 @@ class _HomeState extends State<HomeScene> {
             ],
           ),
           drawer: Drawer(
-            child: SideBar(onChange: _onSidebarChange),
+            child: BlocListener<FeedsBloc, FeedsState>(
+              listener: (context, state) {
+                if (state is FeedsFetchSuccess) {
+                  _feedsBloc.add(FetchFeedsIcon());
+                }
+              },
+              child: SideBar(onChange: _onSidebarChange)
+            ),
           ),
-          bottomNavigationBar: BottomAppBar(
-              child: SizedBox(
-            height: 64.0,
-            child: Row(children: <Widget>[
-              Expanded(
-                child: InkWell(
-                    onTap: () {
-                      _entriesBloc.add(FetchEntries(
-                          feed: _selectedFeed, status: EntryStatus.UnReaded));
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(height: 2.0),
-                          Icon(Icons.adjust),
-                          SizedBox(height: 4.0),
-                          Text('Unread'.tr(), style: TextStyle(fontSize: 14.0))
-                        ])),
-              ),
-              Expanded(
-                child: InkWell(
-                    onTap: () {
-                      _entriesBloc.add(FetchEntries(
-                          feed: _selectedFeed, status: EntryStatus.All));
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(height: 2.0),
-                          Icon(Icons.public),
-                          SizedBox(height: 4.0),
-                          Text('All'.tr(), style: TextStyle(fontSize: 14.0))
-                        ])),
-              ),
-              Expanded(
-                child: InkWell(
-                    onTap: () {
-                      _entriesBloc.add(FetchEntries(
-                          feed: _selectedFeed, status: EntryStatus.Starred));
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(height: 2.0),
-                          Icon(Icons.favorite_border),
-                          SizedBox(height: 4.0),
-                          Text('Favorite'.tr(),
-                              style: TextStyle(fontSize: 14.0))
-                        ])),
-              ),
-            ]),
-          )),
+          bottomNavigationBar: BottomNavigationBar(
+            onTap: (int i) {
+              setState(() {
+                _selectedIndex = i;
+              });
+              if (i == 0) {
+                _selectedStatus = EntryStatus.UnReaded;
+              }
+              if (i == 1) {
+                _selectedStatus = EntryStatus.All;
+              }
+              if (i == 2) {
+                _selectedStatus = EntryStatus.Starred;
+              }
+              _entriesBloc.add(FetchEntries(
+                  feed: _selectedFeed,
+                  status: _selectedStatus,
+                  limit: widget.settings['fetchPertime']));
+            },
+            currentIndex: _selectedIndex,
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.adjust),
+                  title: Text('Unread'.tr(), style: TextStyle(fontSize: 14.0))),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.public),
+                  title: Text('All'.tr(), style: TextStyle(fontSize: 14.0))),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite_border),
+                  title:
+                      Text('Favorite'.tr(), style: TextStyle(fontSize: 14.0)))
+            ],
+          ),
           body: SafeArea(
               bottom: true,
               child: BlocListener<EntriesBloc, EntriesState>(
@@ -173,6 +173,11 @@ class _HomeState extends State<HomeScene> {
                     if (state is EntriesRefreshSuccess) {
                       _completer?.complete();
                       _completer = Completer();
+                    }
+                    if (state is EntriesFetchSuccess && _selectedFeed == null) {
+                      context
+                          .bloc<FeedsBloc>()
+                          .add(CalculateUnreadEntries(entries: state.entries));
                     }
                   },
                   child: RefreshIndicator(

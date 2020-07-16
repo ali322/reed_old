@@ -30,6 +30,7 @@ class SettingsInitial extends SettingsState {
   final Map<String, dynamic> values = {
     'isDarkMode': false,
     'language': 'English',
+    'fetchPertime': 1000,
     'fontSize': 14.0,
     'letterSpacing': 0.0,
     'bold': false

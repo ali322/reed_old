@@ -32,19 +32,25 @@ class _AppState extends State<App> {
   }
 
   Widget _renderHome(context, state) {
-    return MultiRepositoryProvider(providers: [
-      RepositoryProvider<FeedRepository>(
-          create: (context) =>
-              FeedRepository(apiKey: state.apiKey, baseURL: state.baseURL)),
-      RepositoryProvider<EntryRepository>(
-        create: (context) =>
-            EntryRepository(apiKey: state.apiKey, baseURL: state.baseURL),
-      ),
-      RepositoryProvider<UserRepository>(
-        create: (context) =>
-            UserRepository(apiKey: state.apiKey, baseURL: state.baseURL),
-      )
-    ], child: HomeScene());
+    return MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<FeedRepository>(
+              create: (context) =>
+                  FeedRepository(apiKey: state.apiKey, baseURL: state.baseURL)),
+          RepositoryProvider<EntryRepository>(
+            create: (context) =>
+                EntryRepository(apiKey: state.apiKey, baseURL: state.baseURL),
+          ),
+          RepositoryProvider<UserRepository>(
+            create: (context) =>
+                UserRepository(apiKey: state.apiKey, baseURL: state.baseURL),
+          )
+        ],
+        child: BlocBuilder<SettingsBloc, SettingsState>(
+          builder: (context, state) {
+            return HomeScene(settings: state.values);
+          },
+        ));
   }
 
   @override

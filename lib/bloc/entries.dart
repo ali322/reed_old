@@ -10,20 +10,32 @@ class FetchEntries extends EntriesEvent {
   final Feed feed;
   final EntryStatus status;
   final String search;
+  final int limit;
 
-  const FetchEntries({this.feed, this.status, this.search});
+  const FetchEntries({this.feed, this.status, this.search, this.limit});
 }
 
 class RefreshEntries extends EntriesEvent {
   final Feed feed;
   final int lastRefreshedAt;
+  final EntryStatus status;
+  final int limit;
 
-  const RefreshEntries({this.feed, this.lastRefreshedAt});
+  const RefreshEntries(
+      {this.feed, this.lastRefreshedAt, this.status, this.limit});
 }
 
 class SortEntries extends EntriesEvent {
   final String direction;
   const SortEntries({@required this.direction}) : assert(direction != null);
+}
+
+class ChangeEntriesStatus extends EntriesEvent {
+  final List<int> ids;
+  final String status;
+  const ChangeEntriesStatus({@required this.ids, @required this.status})
+      : assert(ids != null),
+        assert(status != null);
 }
 
 abstract class EntriesState extends Equatable {
@@ -88,6 +100,21 @@ class EntriesSortSuccess extends EntriesState {
   List<Object> get props => [entries, total, lastFetchedAt];
 }
 
+class EntriesChangeSuccess extends EntriesState {
+  final List<Entry> entries;
+  final int total;
+  final int lastFetchedAt;
+  const EntriesChangeSuccess(
+      {@required this.entries,
+      @required this.total,
+      @required this.lastFetchedAt})
+      : assert(entries != null),
+        assert(lastFetchedAt != null),
+        assert(total != null);
+  @override
+  List<Object> get props => [entries, total, lastFetchedAt];
+}
+
 class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
   final EntryRepository repository;
 
@@ -106,7 +133,10 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
       yield EntriesFetching();
       try {
         final _ret = await repository.fetchEntries(
-            feed: event.feed, status: event.status, search: event.search);
+            feed: event.feed,
+            status: event.status,
+            search: event.search,
+            limit: event.limit);
         yield EntriesFetchSuccess(
             entries: _ret['rows'], total: _ret['total'], lastFetchedAt: _now());
       } catch (e) {
@@ -116,7 +146,10 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
     if (event is RefreshEntries) {
       try {
         final _ret = await repository.fetchEntries(
-            feed: event.feed, lastRefreshedAt: state.lastFetchedAt);
+            feed: event.feed,
+            status: event.status,
+            lastRefreshedAt: state.lastFetchedAt,
+            limit: event.limit);
         final _next = _ret['rows']..addAll(state.entries.sublist(0));
         yield EntriesRefreshSuccess(
             entries: _next, total: _ret['total'], lastFetchedAt: _now());
@@ -127,12 +160,27 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
     if (event is SortEntries) {
       List<Entry> _next = state.entries.sublist(0);
       _next.sort((a, b) {
-        return event.direction == 'asc'? DateTime.parse(a.publishedAt)
-            .compareTo(DateTime.parse(b.publishedAt)) : DateTime.parse(b.publishedAt)
-            .compareTo(DateTime.parse(a.publishedAt));
+        return event.direction == 'asc'
+            ? DateTime.parse(a.publishedAt)
+                .compareTo(DateTime.parse(b.publishedAt))
+            : DateTime.parse(b.publishedAt)
+                .compareTo(DateTime.parse(a.publishedAt));
       });
-      print(_next.map((e) => e.publishedAt).toList());
       yield EntriesSortSuccess(
+          entries: _next,
+          total: state.total,
+          lastFetchedAt: state.lastFetchedAt);
+    }
+    if (event is ChangeEntriesStatus) {
+      List<Entry> _next = state.entries.sublist(0);
+      await repository.changeEntriesStatus(event.ids, event.status);
+      _next = _next.map<Entry>((val) {
+        if (event.ids.any((id) => id == val.id)) {
+          val.status = event.status;
+        }
+        return val;
+      }).toList();
+      yield EntriesChangeSuccess(
           entries: _next,
           total: state.total,
           lastFetchedAt: state.lastFetchedAt);

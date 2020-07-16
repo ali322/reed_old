@@ -1,4 +1,5 @@
 {
+  "Unread Articles": "Unread Articles",
   "All": "All",
   "Unread": "Unread",
   "Favorite": "Favorite",
@@ -6,6 +7,7 @@
   "Dark Mode": "Dark Mode",
   "Language": "Language",
   "General": "General",
+  "seconds ago": "seconds ago",
   "minutes ago": "minutes ago",
   "hours ago": "hours ago",
   "Copy Link": "Copy Link",
@@ -20,6 +22,8 @@
   "No": "No",
   "FontSize":"FontSize",
   "Read": "Read",
+  "Entries": "Entries",
+  "Fetch Pertime": "Fetch Pertime",
   "LetterSpacing":"LetterSpacing",
   "Bold": "Bold",
   "System": "System",
