@@ -59,7 +59,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
                                 const EdgeInsets.only(bottom: 40.0, top: 60.0),
                             child: Column(
                               children: <Widget>[
-                                Image.asset('assets/image/REED_TEXT.png'),
+                                Image.asset('assets/image/REED_TEXT.png', width: 200.0),
                               ],
                             ),
                           ),
