@@ -175,6 +175,7 @@ class _HomeState extends State<HomeScene> {
                         ChangeAllEntriesStatus(status: 'read'));
                   },
                   child: Icon(Icons.check),
+                  backgroundColor: Theme.of(context).primaryColor
                 )
               : null,
           body: SafeArea(
