@@ -38,6 +38,12 @@ class ChangeEntriesStatus extends EntriesEvent {
         assert(status != null);
 }
 
+class ChangeAllEntriesStatus extends EntriesEvent {
+  final String status;
+  const ChangeAllEntriesStatus({@required this.status})
+      : assert(status != null);
+}
+
 abstract class EntriesState extends Equatable {
   final int total;
   final List<Entry> entries;
@@ -167,6 +173,19 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
                 .compareTo(DateTime.parse(a.publishedAt));
       });
       yield EntriesSortSuccess(
+          entries: _next,
+          total: state.total,
+          lastFetchedAt: state.lastFetchedAt);
+    }
+    if (event is ChangeAllEntriesStatus) {
+      List<Entry> _next = state.entries.sublist(0);
+      final _ids = _next.map<int>((v) => v.id).toList();
+      await repository.changeEntriesStatus(_ids, event.status);
+      _next = _next.map<Entry>((val) {
+        val.status = event.status;
+        return val;
+      }).toList();
+      yield EntriesChangeSuccess(
           entries: _next,
           total: state.total,
           lastFetchedAt: state.lastFetchedAt);

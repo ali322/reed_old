@@ -28,10 +28,10 @@ class _HomeState extends State<HomeScene> {
   MeBloc _meBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Completer<void> _completer;
-  String _title = 'All';
+  String _title = 'Unread';
   String _sortDirection = 'desc';
   Feed _selectedFeed;
-  EntryStatus _selectedStatus = EntryStatus.All;
+  EntryStatus _selectedStatus = EntryStatus.UnReaded;
   int _selectedIndex = 0;
 
   @override
@@ -95,7 +95,7 @@ class _HomeState extends State<HomeScene> {
           key: _scaffoldKey,
           appBar: AppBar(
             centerTitle: true,
-            title: Text(_title),
+            title: Text(_title.tr()),
             elevation: 0.5,
             leading: IconButton(icon: Icon(Icons.menu), onPressed: _openDrawer),
             actions: <Widget>[
@@ -125,13 +125,12 @@ class _HomeState extends State<HomeScene> {
           ),
           drawer: Drawer(
             child: BlocListener<FeedsBloc, FeedsState>(
-              listener: (context, state) {
-                if (state is FeedsFetchSuccess) {
-                  _feedsBloc.add(FetchFeedsIcon());
-                }
-              },
-              child: SideBar(onChange: _onSidebarChange)
-            ),
+                listener: (context, state) {
+                  if (state is FeedsFetchSuccess) {
+                    _feedsBloc.add(FetchFeedsIcon());
+                  }
+                },
+                child: SideBar(onChange: _onSidebarChange)),
           ),
           bottomNavigationBar: BottomNavigationBar(
             onTap: (int i) {
@@ -140,12 +139,15 @@ class _HomeState extends State<HomeScene> {
               });
               if (i == 0) {
                 _selectedStatus = EntryStatus.UnReaded;
+                _title = "Unread";
               }
               if (i == 1) {
                 _selectedStatus = EntryStatus.All;
+                _title = "All";
               }
               if (i == 2) {
                 _selectedStatus = EntryStatus.Starred;
+                _title = "Favorite";
               }
               _entriesBloc.add(FetchEntries(
                   feed: _selectedFeed,
@@ -166,6 +168,15 @@ class _HomeState extends State<HomeScene> {
                       Text('Favorite'.tr(), style: TextStyle(fontSize: 14.0)))
             ],
           ),
+          floatingActionButton: _selectedStatus == EntryStatus.UnReaded
+              ? FloatingActionButton(
+                  onPressed: () {
+                    _entriesBloc.add(
+                        ChangeAllEntriesStatus(status: 'read'));
+                  },
+                  child: Icon(Icons.check),
+                )
+              : null,
           body: SafeArea(
               bottom: true,
               child: BlocListener<EntriesBloc, EntriesState>(
