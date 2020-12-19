@@ -78,7 +78,7 @@ class _SettingsState extends State<SettingsScene> {
                               context.bloc<SettingsBloc>().add(
                                   SettingsChanged(key: 'fetchPertime', value: val));
                             },
-                            items: <int>[1000, 2000,5000, 10000]
+                            items: <int>[50, 100, 200, 500]
                                 .map<DropdownMenuItem>((val) =>
                                     DropdownMenuItem(
                                         child: Text('$val ${"Entries".tr()}'), value: val))

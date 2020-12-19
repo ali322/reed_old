@@ -71,7 +71,7 @@ class SideBar extends StatelessWidget {
                   title: Container(
                     child: Text('Unread Articles'.tr(), style: TextStyle(fontSize: 16.0)),
                   ),
-                  trailing: Text('${_category.unreadCount}', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                  trailing: Text('${_category.unreadCount != null ? _category.unreadCount : 0}', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
                 );
               }
               return ExpansionTile(

@@ -12,16 +12,16 @@ class EntryRepository {
 
   Future<Map<String, dynamic>> fetchEntries(
       {Feed feed,
-      int lastRefreshedAt,
+      int offset,
       int limit,
       String search,
-      String direction = 'desc',
+      String direction = 'asc',
       EntryStatus status = EntryStatus.All}) async {
     String _url =
-        '$baseURL/entries?order=published_at&limit=$limit&direction=$direction&after=$lastRefreshedAt';
+        '$baseURL/entries?order=published_at&direction=$direction&offset=$offset&limit=$limit';
     if (feed != null) {
       _url =
-          '$baseURL/feeds/${feed.id}/entries?order=published_at&limit=$limit&direction=$direction&after=$lastRefreshedAt';
+          '$baseURL/feeds/${feed.id}/entries?order=published_at&direction=$direction&offset=$offset&limit=$limit';
     }
     if (status == EntryStatus.UnReaded) {
       _url += '&status=unread';
@@ -32,6 +32,7 @@ class EntryRepository {
     if (search != null) {
       _url += '&search=$search';
     }
+    print(_url);
     http.Response ret = await APIClient(apiKey).get(_url);
     if (ret.statusCode != 200) {
       throw ("fetch entries failed");

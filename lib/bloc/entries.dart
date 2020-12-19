@@ -10,19 +10,20 @@ class FetchEntries extends EntriesEvent {
   final Feed feed;
   final EntryStatus status;
   final String search;
+  final String direction;
   final int limit;
 
-  const FetchEntries({this.feed, this.status, this.search, this.limit});
+  const FetchEntries(
+      {this.feed, this.status, this.search, this.limit, this.direction});
 }
 
 class RefreshEntries extends EntriesEvent {
   final Feed feed;
-  final int lastRefreshedAt;
   final EntryStatus status;
+  final String direction;
   final int limit;
 
-  const RefreshEntries(
-      {this.feed, this.lastRefreshedAt, this.status, this.limit});
+  const RefreshEntries({this.feed, this.status, this.limit, this.direction});
 }
 
 class SortEntries extends EntriesEvent {
@@ -41,11 +42,12 @@ class ChangeEntriesStatus extends EntriesEvent {
 abstract class EntriesState extends Equatable {
   final int total;
   final List<Entry> entries;
-  final int lastFetchedAt;
-  const EntriesState({this.entries, this.total, this.lastFetchedAt});
+  final int offset;
+  const EntriesState(
+      {this.entries = const [], this.total = 0, this.offset = 0});
 
   @override
-  List<Object> get props => [entries, total, lastFetchedAt];
+  List<Object> get props => [entries, total, offset];
 }
 
 class EntriesIntial extends EntriesState {}
@@ -55,17 +57,15 @@ class EntriesFetching extends EntriesState {}
 class EntriesFetchSuccess extends EntriesState {
   final List<Entry> entries;
   final int total;
-  final int lastFetchedAt;
+  final int offset;
   const EntriesFetchSuccess(
-      {@required this.entries,
-      @required this.total,
-      @required this.lastFetchedAt})
+      {@required this.entries, @required this.total, @required this.offset})
       : assert(entries != null),
-        assert(lastFetchedAt != null),
+        assert(offset != null),
         assert(total != null);
 
   @override
-  List<Object> get props => [entries, total, lastFetchedAt];
+  List<Object> get props => [entries, total, offset];
 }
 
 class EntriesFetchFailure extends EntriesState {}
@@ -73,46 +73,40 @@ class EntriesFetchFailure extends EntriesState {}
 class EntriesRefreshSuccess extends EntriesState {
   final List<Entry> entries;
   final int total;
-  final int lastFetchedAt;
+  final int offset;
   const EntriesRefreshSuccess(
-      {@required this.entries,
-      @required this.total,
-      @required this.lastFetchedAt})
+      {@required this.entries, @required this.total, @required this.offset})
       : assert(entries != null),
-        assert(lastFetchedAt != null),
+        assert(offset != null),
         assert(total != null);
   @override
-  List<Object> get props => [entries, total, lastFetchedAt];
+  List<Object> get props => [entries, total, offset];
 }
 
 class EntriesSortSuccess extends EntriesState {
   final List<Entry> entries;
   final int total;
-  final int lastFetchedAt;
+  final int offset;
   const EntriesSortSuccess(
-      {@required this.entries,
-      @required this.total,
-      @required this.lastFetchedAt})
+      {@required this.entries, @required this.total, @required this.offset})
       : assert(entries != null),
-        assert(lastFetchedAt != null),
+        assert(offset != null),
         assert(total != null);
   @override
-  List<Object> get props => [entries, total, lastFetchedAt];
+  List<Object> get props => [entries, total, offset];
 }
 
 class EntriesChangeSuccess extends EntriesState {
   final List<Entry> entries;
   final int total;
-  final int lastFetchedAt;
+  final int offset;
   const EntriesChangeSuccess(
-      {@required this.entries,
-      @required this.total,
-      @required this.lastFetchedAt})
+      {@required this.entries, @required this.total, @required this.offset})
       : assert(entries != null),
-        assert(lastFetchedAt != null),
+        assert(offset != null),
         assert(total != null);
   @override
-  List<Object> get props => [entries, total, lastFetchedAt];
+  List<Object> get props => [entries, total, offset];
 }
 
 class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
@@ -123,9 +117,21 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
   @override
   EntriesState get initialState => EntriesIntial();
 
-  int _now() {
-    return (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).round();
+  List<Entry> _sort(List<Entry> entries, String direction) {
+    List<Entry> _next = entries.sublist(0);
+    _next.sort((a, b) {
+      return direction == 'asc'
+          ? DateTime.parse(a.publishedAt)
+              .compareTo(DateTime.parse(b.publishedAt))
+          : DateTime.parse(b.publishedAt)
+              .compareTo(DateTime.parse(a.publishedAt));
+    });
+    return _next;
   }
+
+  // int _now() {
+  //   return (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).round();
+  // }
 
   @override
   Stream<EntriesState> mapEventToState(EntriesEvent event) async* {
@@ -136,9 +142,12 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
             feed: event.feed,
             status: event.status,
             search: event.search,
+            offset: state.offset,
             limit: event.limit);
         yield EntriesFetchSuccess(
-            entries: _ret['rows'], total: _ret['total'], lastFetchedAt: _now());
+            entries: _sort(_ret['rows'], event.direction),
+            total: _ret['total'],
+            offset: state.offset + event.limit);
       } catch (e) {
         yield EntriesFetchFailure();
       }
@@ -148,28 +157,19 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
         final _ret = await repository.fetchEntries(
             feed: event.feed,
             status: event.status,
-            lastRefreshedAt: state.lastFetchedAt,
+            offset: state.offset,
             limit: event.limit);
-        final _next = _ret['rows']..addAll(state.entries.sublist(0));
+        final _next = state.entries.sublist(0)..addAll(_ret['rows']);
+        final _offset = state.offset + event.limit;
         yield EntriesRefreshSuccess(
-            entries: _next, total: _ret['total'], lastFetchedAt: _now());
+            entries: _sort(_next, event.direction), total: _ret['total'], offset: _offset);
       } catch (e) {
         yield EntriesFetchFailure();
       }
     }
     if (event is SortEntries) {
-      List<Entry> _next = state.entries.sublist(0);
-      _next.sort((a, b) {
-        return event.direction == 'asc'
-            ? DateTime.parse(a.publishedAt)
-                .compareTo(DateTime.parse(b.publishedAt))
-            : DateTime.parse(b.publishedAt)
-                .compareTo(DateTime.parse(a.publishedAt));
-      });
       yield EntriesSortSuccess(
-          entries: _next,
-          total: state.total,
-          lastFetchedAt: state.lastFetchedAt);
+          entries: _sort(state.entries, event.direction), total: state.total, offset: state.offset);
     }
     if (event is ChangeEntriesStatus) {
       List<Entry> _next = state.entries.sublist(0);
@@ -181,9 +181,7 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
         return val;
       }).toList();
       yield EntriesChangeSuccess(
-          entries: _next,
-          total: state.total,
-          lastFetchedAt: state.lastFetchedAt);
+          entries: _next, total: state.total, offset: state.offset);
     }
   }
 }

@@ -28,10 +28,10 @@ class _HomeState extends State<HomeScene> {
   MeBloc _meBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Completer<void> _completer;
-  String _title = 'All';
+  String _title = 'Unread';
   String _sortDirection = 'desc';
   Feed _selectedFeed;
-  EntryStatus _selectedStatus = EntryStatus.All;
+  EntryStatus _selectedStatus = EntryStatus.UnReaded;
   int _selectedIndex = 0;
 
   @override
@@ -49,6 +49,7 @@ class _HomeState extends State<HomeScene> {
     EntryRepository _entryRepository = context.repository<EntryRepository>();
     _entriesBloc = EntriesBloc(repository: _entryRepository);
     _entriesBloc.add(FetchEntries(
+        direction: _sortDirection,
         status: EntryStatus.UnReaded, limit: widget.settings['fetchPertime']));
 
     UserRepository _userRepository = context.repository<UserRepository>();
@@ -79,6 +80,7 @@ class _HomeState extends State<HomeScene> {
     _entriesBloc.add(RefreshEntries(
         feed: _selectedFeed,
         status: _selectedStatus,
+        direction: _sortDirection,
         limit: widget.settings['fetchPertime']));
     return _completer.future;
   }
@@ -150,6 +152,7 @@ class _HomeState extends State<HomeScene> {
               _entriesBloc.add(FetchEntries(
                   feed: _selectedFeed,
                   status: _selectedStatus,
+                  direction: _sortDirection,
                   limit: widget.settings['fetchPertime']));
             },
             currentIndex: _selectedIndex,
