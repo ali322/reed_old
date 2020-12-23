@@ -32,6 +32,8 @@
   "Made By {}": "Made By {}",
   "Site URL": "Site URL",
   "API Key": "API Key",
+  "Please input site title": "Please input site title",
+  "site title can not be empty": "site title can not be empty",
   "Please input site url": "Please input site url",
   "site url can not be empty": "site url can not be empty",
   "api key can not be empty": "api key can not be empty",
