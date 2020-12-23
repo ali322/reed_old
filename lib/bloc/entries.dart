@@ -40,10 +40,12 @@ class SelectEntries extends EntriesEvent {
 
 class ChangeEntriesStatus extends EntriesEvent {
   final List<int> ids;
-  final EntryStatus status;
-  const ChangeEntriesStatus({@required this.ids, @required this.status})
+  final EntryStatus from;
+  final EntryStatus to;
+  const ChangeEntriesStatus({@required this.ids, @required this.from, @required this.to})
       : assert(ids != null),
-        assert(status != null);
+        assert( from != null),
+        assert(to != null);
 }
 
 class Entries {
@@ -134,19 +136,19 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
       final _offset = state.data[event.status].offset;
       var _next = Map.fromEntries(state.data.entries);
       yield EntriesFetching();
-        try {
-          final _ret = await repository.fetchEntries(
-              status: event.status, offset: _offset, limit: event.limit);
-          _next[event.status] = Entries(
-            entries: _sort(_ret["rows"], event.direction),
-            total: _ret['total'],
-            offset: _offset + event.limit,
-          );
-          yield EntriesFetchSuccess(data: _next);
-        } catch (e) {
-          print("===>$e");
-          yield EntriesFetchFailure();
-        }
+      try {
+        final _ret = await repository.fetchEntries(
+            status: event.status, offset: _offset, limit: event.limit);
+        _next[event.status] = Entries(
+          entries: _sort(_ret["rows"], event.direction),
+          total: _ret['total'],
+          offset: _offset + event.limit,
+        );
+        yield EntriesFetchSuccess(data: _next);
+      } catch (e) {
+        print("===>$e");
+        yield EntriesFetchFailure();
+      }
     }
     if (event is RefreshEntries) {
       try {
@@ -177,19 +179,19 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
       yield EntriesSortSuccess(data: _next);
     }
     if (event is ChangeEntriesStatus) {
-      List<Entry> _entries = state.data[event.status].entries.sublist(0);
-      await repository.changeEntriesStatus(event.ids, event.status);
+      List<Entry> _entries = state.data[event.from].entries.sublist(0);
+      await repository.changeEntriesStatus(event.ids, event.to);
       _entries = _entries.map<Entry>((val) {
         if (event.ids.any((id) => id == val.id)) {
-          val.status = event.status;
+          val.status = event.to;
         }
         return val;
       }).toList();
       var _next = Map.fromEntries(state.data.entries);
-      _next[event.status] = Entries(
+      _next[event.from] = Entries(
         entries: _entries,
-        total: state.data[event.status].total,
-        offset: state.data[event.status].offset,
+        total: state.data[event.from].total,
+        offset: state.data[event.from].offset,
       );
       yield EntriesChangeSuccess(data: _next);
     }

@@ -27,6 +27,7 @@ class IndexScene extends StatefulWidget {
 class _IndexState extends State<IndexScene> {
   FeedsBloc _feedsBloc;
   EntriesBloc _entriesBloc;
+  EntryRepository _entryRepository;
   MeBloc _meBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Completer<void> _completer;
@@ -47,7 +48,7 @@ class _IndexState extends State<IndexScene> {
     _feedsBloc = FeedsBloc(repository: _feedsRepository);
     _feedsBloc.add(FetchFeeds());
 
-    EntryRepository _entryRepository = context.read<EntryRepository>();
+    _entryRepository = context.read<EntryRepository>();
     _entriesBloc = EntriesBloc(repository: _entryRepository);
     _entriesBloc.add(FetchEntries(
         direction: _sortDirection,
@@ -84,12 +85,14 @@ class _IndexState extends State<IndexScene> {
                 dense: true,
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => BlocProvider.value(
-                          value: _entriesBloc,
-                          child: EntriesScene(status: _selectedStatus))));
+                      builder: (context) => RepositoryProvider.value(
+                          value: _entryRepository,
+                          child: BlocProvider.value(
+                              value: _entriesBloc,
+                              child: EntriesScene(status: _selectedStatus)))));
                 },
                 title: Container(
-                  child: Text('Unread Articles'.tr(),
+                  child: Text('All Articles'.tr(),
                       style: TextStyle(fontSize: 16.0)),
                 ),
                 trailing: Text(
@@ -103,10 +106,13 @@ class _IndexState extends State<IndexScene> {
                   .map<Widget>((_feed) => InkWell(
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => BlocProvider.value(
-                                  value: _entriesBloc,
-                                  child: EntriesScene(
-                                      feed: _feed, status: _selectedStatus))));
+                              builder: (context) => RepositoryProvider.value(
+                                  value: _entryRepository,
+                                  child: BlocProvider.value(
+                                      value: _entriesBloc,
+                                      child: EntriesScene(
+                                          feed: _feed,
+                                          status: _selectedStatus)))));
                         },
                         child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -155,13 +161,15 @@ class _IndexState extends State<IndexScene> {
             centerTitle: true,
             title: Text(widget.title),
             elevation: 0.5,
-            leading: IconButton(
-                icon: Icon(Icons.settings_outlined),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SettingsScene(),
-                      fullscreenDialog: true));
-                }),
+            actions: [
+              IconButton(
+                  icon: Icon(Icons.settings_outlined),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SettingsScene(),
+                        fullscreenDialog: true));
+                  })
+            ],
           ),
           body: MultiBlocListener(
             listeners: [

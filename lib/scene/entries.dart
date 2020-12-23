@@ -20,6 +20,13 @@ class EntriesScene extends StatefulWidget {
 
 class _EntriesState extends State<EntriesScene> {
   String _sortDirection = 'desc';
+  void _onEntryFetched(int id) {
+    if (widget.status == EntryStatus.UnReaded) {
+      context.read<EntriesBloc>().add(ChangeEntriesStatus(
+          ids: [id], from: EntryStatus.UnReaded, to: EntryStatus.Read));
+    }
+  }
+
   Widget _renderEntries(List<Entry> entries) {
     return ListView.builder(
       itemCount: entries.length,
@@ -29,13 +36,12 @@ class _EntriesState extends State<EntriesScene> {
         return ListTile(
           dense: true,
           onTap: () {
-            context.read<EntriesBloc>().add(ChangeEntriesStatus(
-                ids: [_entry.id], status: EntryStatus.Read));
-            // _bloc.close();
             final _repository = context.read<EntryRepository>();
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) => RepositoryProvider.value(
-                    value: _repository, child: EntryScene(id: _entry.id))));
+                    value: _repository,
+                    child: EntryScene(
+                        id: _entry.id, onFetched: _onEntryFetched))));
           },
           title: Text(_entry.title,
               style: _entry.status != EntryStatus.Read

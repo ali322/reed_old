@@ -45,6 +45,7 @@ class EntryRepository {
 
   Future<Entry> fetchEntry({int id}) async {
     http.Response ret = await APIClient(apiKey).get('$baseURL/entries/$id');
+    print("===> ${baseURL}  ${id}");
     if (ret.statusCode != 200) {
       throw ("fetch entry failed");
     } else {
@@ -57,8 +58,10 @@ class EntryRepository {
   Future<void> changeEntriesStatus(List<int> ids, EntryStatus status) async {
     final ret = await APIClient(apiKey).put('$baseURL/entries',
         headers: {"Content-Type": "application/json;charset=utf-8"},
-        body: jsonEncode(
-            <String, dynamic>{'entry_ids': ids, 'status': status.asString()}));
+        body: jsonEncode(<String, dynamic>{
+          'entry_ids': ids,
+          'status': status.asString().toLowerCase()
+        }));
     if (ret.statusCode != 204) {
       throw ("change entries failed");
     }

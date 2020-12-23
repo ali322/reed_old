@@ -12,8 +12,11 @@ import 'package:reed/repository/repository.dart';
 import '../bloc/bloc.dart';
 
 class EntryScene extends StatefulWidget {
+  final Function onFetched;
   final int id;
-  const EntryScene({@required this.id}) : assert(id != null);
+  const EntryScene({Key key, @required this.id, @required this.onFetched})
+      : assert(id != null),
+        super(key: key);
   @override
   State<StatefulWidget> createState() => _EntryState();
 }
@@ -64,9 +67,8 @@ class _EntryState extends State<EntryScene> {
                 data: entry.content,
                 style: {
                   "html": Style(
-                    fontSize: FontSize(state.values['fontSize']),
-                    letterSpacing: state.values['letterSpacing']
-                  ),
+                      fontSize: FontSize(state.values['fontSize']),
+                      letterSpacing: state.values['letterSpacing']),
                 },
                 onImageError: (exception, stackTrace) {
                   // print("===>$exception");
@@ -90,7 +92,12 @@ class _EntryState extends State<EntryScene> {
                 },
               ),
               actions: <Widget>[
-                BlocBuilder<EntryBloc, EntryState>(
+                BlocConsumer<EntryBloc, EntryState>(
+                  listener: (context, state) {
+                    if (state is EntryFetchSuccess) {
+                      widget.onFetched(widget.id);
+                    }
+                  },
                   builder: (context, state) {
                     if (state is EntryFetchSuccess) {
                       final _entry = state.entry;
