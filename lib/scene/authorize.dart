@@ -68,12 +68,12 @@ class _AuthorizeState extends State<AuthorizeScene> {
                             controller: _titleController,
                             validator: (value) {
                               if (value.isEmpty) {
-                                return 'title can not be empty'.tr();
+                                return 'site title can not be empty'.tr();
                               }
                               return null;
                             },
                             decoration: InputDecoration(
-                              hintText: "Please input title".tr(),
+                              hintText: "Please input site title".tr(),
                               hintStyle: TextStyle(fontSize: 14.0),
                             ),
                           ),
