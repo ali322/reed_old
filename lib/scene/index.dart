@@ -68,6 +68,48 @@ class _IndexState extends State<IndexScene> {
     return _completer.future;
   }
 
+  Widget _renderTile(Category category, BuildContext context) {
+    return ExpansionTile(
+      title: Text(category.title, style: TextStyle(fontSize: 16.0)),
+      children: category.feeds
+          .map<Widget>((_feed) => InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => RepositoryProvider.value(
+                          value: _entryRepository,
+                          child: BlocProvider.value(
+                              value: _entriesBloc,
+                              child: EntriesScene(
+                                  feed: _feed, status: _selectedStatus)))));
+                },
+                child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 16.0),
+                    child: Row(
+                      children: <Widget>[
+                        _feed.icon != null
+                            ? Image.memory(
+                                base64Decode(
+                                    _feed.icon.split(';')[1].split(',')[1]),
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.fill,
+                                gaplessPlayback: true,
+                              )
+                            : Container(child: Icon(Icons.rss_feed)),
+                        SizedBox(width: 12.0),
+                        Expanded(child: Text(_feed.title)),
+                        Text('${_feed.count}',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      ],
+                    ),
+                    alignment: Alignment.centerLeft),
+              ))
+          .toList(),
+    );
+  }
+
   Widget _renderCategories(BuildContext context) {
     if (_loading) {
       return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
@@ -100,47 +142,8 @@ class _IndexState extends State<IndexScene> {
                     style: TextStyle(color: Colors.grey, fontSize: 12.0)),
               );
             }
-            return ExpansionTile(
-              title: Text(_category.title, style: TextStyle(fontSize: 16.0)),
-              children: _category.feeds
-                  .map<Widget>((_feed) => InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => RepositoryProvider.value(
-                                  value: _entryRepository,
-                                  child: BlocProvider.value(
-                                      value: _entriesBloc,
-                                      child: EntriesScene(
-                                          feed: _feed,
-                                          status: _selectedStatus)))));
-                        },
-                        child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 16.0),
-                            child: Row(
-                              children: <Widget>[
-                                _feed.icon != null
-                                    ? Image.memory(
-                                        base64Decode(_feed.icon
-                                            .split(';')[1]
-                                            .split(',')[1]),
-                                        width: 20,
-                                        height: 20,
-                                        fit: BoxFit.fill,
-                                        gaplessPlayback: true,
-                                      )
-                                    : Container(child: Icon(Icons.rss_feed)),
-                                SizedBox(width: 12.0),
-                                Expanded(child: Text(_feed.title)),
-                                Text('${_feed.count}',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12.0)),
-                              ],
-                            ),
-                            alignment: Alignment.centerLeft),
-                      ))
-                  .toList(),
-            );
+            final _themeData = Theme.of(context).copyWith(dividerColor: Colors.transparent);
+            return Theme(data: _themeData, child: _renderTile(_category, context));
           },
         );
       },
