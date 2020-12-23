@@ -30,7 +30,7 @@ class SettingsInitial extends SettingsState {
   final Map<String, dynamic> values = {
     'isDarkMode': false,
     'language': 'English',
-    'fetchPertime': 1000,
+    'fetchPertime': 50,
     'fontSize': 14.0,
     'letterSpacing': 0.0,
     'bold': false
@@ -67,10 +67,9 @@ class SettingsChangeSuccess extends SettingsState {
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SettingsRepository repository;
 
-  SettingsBloc({@required this.repository}) : assert(repository != null);
-
-  @override
-  SettingsState get initialState => SettingsInitial();
+  SettingsBloc({@required this.repository})
+      : assert(repository != null),
+        super(SettingsInitial());
 
   @override
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {

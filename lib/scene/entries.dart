@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/model/model.dart';
 import 'package:reed/repository/repository.dart';
@@ -7,7 +8,18 @@ import 'package:reed/scene/entry.dart';
 
 import '../bloc/bloc.dart';
 
-class EntriesScene extends StatelessWidget {
+class EntriesScene extends StatefulWidget {
+  final Feed feed;
+  final EntryStatus status;
+  const EntriesScene({Key key, this.feed, this.status}) : super(key: key);
+  @override
+  State<StatefulWidget> createState() {
+    return _EntriesState();
+  }
+}
+
+class _EntriesState extends State<EntriesScene> {
+  String _sortDirection = 'desc';
   Widget _renderEntries(List<Entry> entries) {
     return ListView.builder(
       itemCount: entries.length,
@@ -17,17 +29,16 @@ class EntriesScene extends StatelessWidget {
         return ListTile(
           dense: true,
           onTap: () {
-            context
-                .bloc<EntriesBloc>()
-                .add(ChangeEntriesStatus(ids: [_entry.id], status: 'read'));
+            context.read<EntriesBloc>().add(ChangeEntriesStatus(
+                ids: [_entry.id], status: EntryStatus.Read));
             // _bloc.close();
-            final _repository = context.repository<EntryRepository>();
+            final _repository = context.read<EntryRepository>();
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) => RepositoryProvider.value(
                     value: _repository, child: EntryScene(id: _entry.id))));
           },
           title: Text(_entry.title,
-              style: _entry.status != 'read'
+              style: _entry.status != EntryStatus.Read
                   ? TextStyle(fontSize: 14.0)
                   : TextStyle(fontSize: 14.0, color: Colors.grey)),
           subtitle: Row(children: <Widget>[
@@ -44,19 +55,53 @@ class EntriesScene extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: BlocBuilder<EntriesBloc, EntriesState>(
-        builder: (BuildContext context, EntriesState state) {
-          if (state is EntriesFetchSuccess ||
-              state is EntriesRefreshSuccess ||
-              state is EntriesChangeSuccess ||
-              state is EntriesSortSuccess) {
-            final _entries = state.entries;
-            return _renderEntries(_entries);
-          }
-          return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
-        },
-      ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(widget.feed == null ? "All".tr() : widget.feed.title),
+          elevation: 0.5,
+          actions: <Widget>[
+            PopupMenuButton(
+              icon: Icon(Icons.sort),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              onSelected: (String val) {
+                setState(() {
+                  _sortDirection = val;
+                });
+                context
+                    .read<EntriesBloc>()
+                    .add(SortEntries(direction: val, status: widget.status));
+              },
+              itemBuilder: (context) => [
+                CheckedPopupMenuItem(
+                  checked: _sortDirection == 'desc',
+                  value: 'desc',
+                  child: Text('Newest to Oldest'.tr()),
+                ),
+                CheckedPopupMenuItem(
+                  checked: _sortDirection == 'asc',
+                  value: 'asc',
+                  child: Text('Oldest to Newest'.tr()),
+                )
+              ],
+            )
+          ],
+        ),
+        body: BlocBuilder<EntriesBloc, EntriesState>(
+          builder: (context, state) {
+            if (state is EntriesFetchSuccess ||
+                state is EntriesRefreshSuccess ||
+                state is EntriesChangeSuccess ||
+                state is EntriesSortSuccess) {
+              List<Entry> _entries = state.data[widget.status].entries;
+              if (widget.feed != null) {
+                _entries =
+                    _entries.where((v) => v.feedID == widget.feed.id).toList();
+              }
+              return _renderEntries(_entries);
+            }
+            return Center(child: CircularProgressIndicator(strokeWidth: 2.0));
+          },
+        ));
   }
 }

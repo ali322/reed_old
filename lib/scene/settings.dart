@@ -45,7 +45,7 @@ class _SettingsState extends State<SettingsScene> {
                             trailing: Switch(
                                 value: state.values['isDarkMode'],
                                 onChanged: (bool truthy) {
-                                  context.bloc<SettingsBloc>().add(
+                                  context.read<SettingsBloc>().add(
                                       SettingsChanged(
                                           key: 'isDarkMode', value: truthy));
                                 })),
@@ -57,7 +57,7 @@ class _SettingsState extends State<SettingsScene> {
                           trailing: DropdownButton(
                             value: state.values['language'],
                             onChanged: (val) {
-                              context.bloc<SettingsBloc>().add(
+                              context.read<SettingsBloc>().add(
                                   SettingsChanged(key: 'language', value: val));
                             },
                             items: <String>['English', 'Chinese']
@@ -75,7 +75,7 @@ class _SettingsState extends State<SettingsScene> {
                           trailing: DropdownButton(
                             value: state.values['fetchPertime'],
                             onChanged: (val) {
-                              context.bloc<SettingsBloc>().add(
+                              context.read<SettingsBloc>().add(
                                   SettingsChanged(key: 'fetchPertime', value: val));
                             },
                             items: <int>[50, 100, 200, 500]
@@ -98,7 +98,7 @@ class _SettingsState extends State<SettingsScene> {
                           trailing: DropdownButton(
                             value: state.values['fontSize'],
                             onChanged: (val) {
-                              context.bloc<SettingsBloc>().add(
+                              context.read<SettingsBloc>().add(
                                   SettingsChanged(key: 'fontSize', value: val));
                             },
                             items: <double>[12.0, 14.0, 16.0, 18.0]
@@ -117,7 +117,7 @@ class _SettingsState extends State<SettingsScene> {
                           trailing: DropdownButton(
                             value: state.values['letterSpacing'],
                             onChanged: (val) {
-                              context.bloc<SettingsBloc>().add(SettingsChanged(
+                              context.read<SettingsBloc>().add(SettingsChanged(
                                   key: 'letterSpacing', value: val));
                             },
                             items: <double>[0.0, 2.0, 4.0, 6.0]
@@ -136,7 +136,7 @@ class _SettingsState extends State<SettingsScene> {
                             trailing: Switch(
                                 value: state.values['isDarkMode'],
                                 onChanged: (bool truthy) {
-                                  context.bloc<SettingsBloc>().add(
+                                  context.read<SettingsBloc>().add(
                                       SettingsChanged(
                                           key: 'isDarkMode', value: truthy));
                                 })),
@@ -149,7 +149,7 @@ class _SettingsState extends State<SettingsScene> {
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => BlocProvider.value(
-                                    value: context.bloc<APIBloc>(),
+                                    value: context.watch<APIBloc>(),
                                     child: AuthorizationScene(),
                                   )));
                             },

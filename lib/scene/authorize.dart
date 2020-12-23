@@ -13,6 +13,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = new GlobalKey<FormState>();
   bool _isSubmiting = false;
+  TextEditingController _titleController = new TextEditingController();
   TextEditingController _urlController = new TextEditingController();
   TextEditingController _keyController = new TextEditingController();
 
@@ -64,6 +65,19 @@ class _AuthorizeState extends State<AuthorizeScene> {
                             ),
                           ),
                           TextFormField(
+                            controller: _titleController,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'title can not be empty'.tr();
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Please input title".tr(),
+                              hintStyle: TextStyle(fontSize: 14.0),
+                            ),
+                          ),
+                          TextFormField(
                             controller: _urlController,
                             validator: (value) {
                               if (value.isEmpty) {
@@ -103,11 +117,12 @@ class _AuthorizeState extends State<AuthorizeScene> {
                                         setState(() {
                                           _isSubmiting = true;
                                         });
+                                        final _title = _titleController.text;
                                         final _url = _urlController.text;
                                         final _key = _keyController.text;
                                         BlocProvider.of<APIBloc>(context).add(
                                             SaveAPICredential(
-                                                title: '',
+                                                title: _title,
                                                 apiKey: _key,
                                                 baseURL: _url));
                                       }

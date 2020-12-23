@@ -23,7 +23,7 @@ class _EntryState extends State<EntryScene> {
   @override
   void initState() {
     super.initState();
-    EntryRepository _repository = context.repository<EntryRepository>();
+    EntryRepository _repository = context.read<EntryRepository>();
     _bloc = EntryBloc(repository: _repository);
     _bloc.add(FetchEntry(id: widget.id));
   }

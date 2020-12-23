@@ -72,10 +72,9 @@ class APICredentialLoading extends APIState {}
 class APIBloc extends Bloc<APIEvent, APIState> {
   final APIRepository repository;
 
-  APIBloc({@required this.repository}) : assert(repository != null);
-
-  @override
-  APIState get initialState => APIInitial();
+  APIBloc({@required this.repository})
+      : assert(repository != null),
+        super(APIInitial());
 
   @override
   Stream<APIState> mapEventToState(APIEvent event) async* {

@@ -4,7 +4,7 @@ class Category {
   final int id;
   final String title;
   List<Feed> feeds;
-  int unreadCount;
+  int count;
 
   Category({this.id, this.title, this.feeds});
 

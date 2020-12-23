@@ -50,7 +50,7 @@ class AuthorizationScene extends StatelessWidget {
                     FlatButton(
                       child: Text('Yes'.tr()),
                       onPressed: () {
-                        context.bloc<APIBloc>().add(ResetAPICredential());
+                        context.read<APIBloc>().add(ResetAPICredential());
                         Future.delayed(const Duration(milliseconds: 300), () {
                           Navigator.of(context)
                               .popUntil((route) => route.isFirst);

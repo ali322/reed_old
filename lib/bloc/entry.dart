@@ -39,10 +39,9 @@ class EntryFetchFailure extends EntryState {}
 class EntryBloc extends Bloc<EntryEvent, EntryState> {
   final EntryRepository repository;
 
-  EntryBloc({@required this.repository}) : assert(repository != null);
-
-  @override
-  EntryState get initialState => EntryIntial();
+  EntryBloc({@required this.repository})
+      : assert(repository != null),
+        super(EntryIntial());
 
   @override
   Stream<EntryState> mapEventToState(EntryEvent event) async* {

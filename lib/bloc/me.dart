@@ -34,10 +34,9 @@ class MeFetchFailure extends MeState {}
 class MeBloc extends Bloc<MeEvent, MeState> {
   final UserRepository repository;
 
-  MeBloc({@required this.repository}) : assert(repository != null);
-
-  @override
-  MeState get initialState => MeInitial();
+  MeBloc({@required this.repository})
+      : assert(repository != null),
+        super(MeInitial());
 
   @override
   Stream<MeState> mapEventToState(MeEvent event) async* {

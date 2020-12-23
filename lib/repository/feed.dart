@@ -51,7 +51,7 @@ class FeedRepository {
     return _next;
   }
 
-  List<Category> calculateUnreadEntries(
+  List<Category> calculateFeeds(
       List<Category> categories, List<Entry> entries) {
     List<Category> _next = categories.sublist(0);
     Map<int, int> _countOfFeeds = {};
@@ -62,16 +62,16 @@ class FeedRepository {
         _countOfFeeds[entry.feedID] = 1;
       }
     }
-    int _unreadCount = 0;
+    int _amount = 0;
     _next = _next.map<Category>((category) {
-      category.feeds = category.feeds.map<Feed>((feed) {
-        feed.unreadCount = _countOfFeeds[feed.id] ?? 0;
-        _unreadCount += feed.unreadCount;
+      category.feeds = category.feeds.map((feed) {
+        feed.count = _countOfFeeds[feed.id] ?? 0;
+        _amount += feed.count;
         return feed;
       }).toList();
       return category;
     }).toList();
-    _next[0].unreadCount = _unreadCount;
+    _next[0].count = _amount;
     return _next;
   }
 }

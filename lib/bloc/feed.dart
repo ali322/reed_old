@@ -10,9 +10,9 @@ class FetchFeeds extends FeedsEvent {}
 
 class FetchFeedsIcon extends FeedsEvent {}
 
-class CalculateUnreadEntries extends FeedsEvent {
+class CalculateFeeds extends FeedsEvent {
   final List<Entry> entries;
-  const CalculateUnreadEntries({@required this.entries});
+  const CalculateFeeds({@required this.entries});
   @override
   List<Object> get props => [entries];
 }
@@ -51,6 +51,8 @@ class FeedsIconFetchSuccess extends FeedsState {
   List<Object> get props => [categories];
 }
 
+class FeedsCalculating extends FeedsState {}
+
 class FeedsCalculateSuccess extends FeedsState {
   final List<Category> categories;
   const FeedsCalculateSuccess({@required this.categories})
@@ -63,10 +65,9 @@ class FeedsCalculateSuccess extends FeedsState {
 class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
   final FeedRepository repository;
 
-  FeedsBloc({@required this.repository}) : assert(repository != null);
-
-  @override
-  FeedsState get initialState => FeedsInitial();
+  FeedsBloc({@required this.repository})
+      : assert(repository != null),
+        super(FeedsInitial());
 
   @override
   Stream<FeedsState> mapEventToState(FeedsEvent event) async* {
@@ -84,7 +85,7 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
       for (var _category in state.categories) {
         _ids.addAll(_category.feeds.map<int>((val) => val.id).toList());
       }
-      final _ret = await repository.fetchFeedIcon(_ids);
+      final _ret = await repository.fetchFeedIcon(_ids.sublist(0, 10));
       List<Category> _next = state.categories.sublist(0);
       _next = _next.map<Category>((val) {
         val.feeds = val.feeds.map<Feed>((feed) {
@@ -95,9 +96,10 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
       }).toList();
       yield FeedsIconFetchSuccess(categories: _next);
     }
-    if (event is CalculateUnreadEntries) {
-      final _next =
-          repository.calculateUnreadEntries(state.categories, event.entries);
+    if (event is CalculateFeeds) {
+      final _categories = state.categories;
+      yield FeedsCalculating();
+      final _next = repository.calculateFeeds(_categories, event.entries);
       yield FeedsCalculateSuccess(categories: _next);
     }
   }

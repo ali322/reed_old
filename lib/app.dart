@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reed/bloc/bloc.dart';
 import 'package:reed/repository/repository.dart';
-import 'package:reed/scene/home.dart';
+import 'package:reed/scene/index.dart';
 import 'package:reed/scene/authorize.dart';
 
 import 'bloc/bloc.dart';
@@ -21,7 +21,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    BlocSupervisor.delegate = SimpleBlocDelegate();
+    Bloc.observer = SimpleBlocObserver();
     final _apiRepository = APIRepository();
     _apiBloc = APIBloc(repository: _apiRepository);
     _apiBloc.add(LoadAPICredential());
@@ -31,7 +31,8 @@ class _AppState extends State<App> {
     _settingsBloc.add(LoadSettings());
   }
 
-  Widget _renderHome(context, state) {
+  Widget _renderIndex(context, state) {
+    final _title = state.title;
     return MultiRepositoryProvider(
         providers: [
           RepositoryProvider<FeedRepository>(
@@ -48,7 +49,7 @@ class _AppState extends State<App> {
         ],
         child: BlocBuilder<SettingsBloc, SettingsState>(
           builder: (context, state) {
-            return HomeScene(settings: state.values);
+            return IndexScene(settings: state.values, title: _title);
           },
         ));
   }
@@ -91,7 +92,7 @@ class _AppState extends State<App> {
             home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
               if (state is APICredentialSaveSuccess ||
                   state is APICredentialLoadSuccess) {
-                return _renderHome(context, state);
+                return _renderIndex(context, state);
               }
               if (state is APICredentialLoading) {
                 return Center(

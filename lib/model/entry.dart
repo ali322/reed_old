@@ -1,5 +1,26 @@
 part of model;
 
+enum EntryStatus { UnReaded, Starred, All, Read }
+
+Map<String, EntryStatus> _vals() {
+  Map<String, EntryStatus> _vals = {};
+  EntryStatus.values.forEach((e) {
+    final _key = e.toString().replaceAll("EntryStatus.", "");
+    _vals[_key] = e;
+  });
+  return _vals;
+}
+
+EntryStatus entryStatusfromString(String val) {
+  return _vals()[val];
+}
+
+extension EntryStatusExt on EntryStatus {
+  String asString() {
+    return _vals().keys.toList()[this.index];
+  }
+}
+
 class Entry {
   final int id;
   final String title;
@@ -7,7 +28,7 @@ class Entry {
   final String url;
   final String content;
   final String publishedAt;
-  String status;
+  EntryStatus status;
   final bool isStarred;
   final int feedID;
   final Feed feed;
@@ -31,7 +52,7 @@ class Entry {
         this.url = json['url'],
         this.content = json['content'],
         this.publishedAt = json['published_at'],
-        this.status = json['status'],
+        this.status = entryStatusfromString(json['status']),
         this.isStarred = json['starred'],
         this.feed = Feed.fromJSON(json['feed']),
         this.feedID = json['feed']['id'];

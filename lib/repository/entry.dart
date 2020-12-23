@@ -1,7 +1,5 @@
 part of repository;
 
-enum EntryStatus { UnReaded, Starred, All }
-
 class EntryRepository {
   final String apiKey;
   final String baseURL;
@@ -56,11 +54,11 @@ class EntryRepository {
     }
   }
 
-  Future<void> changeEntriesStatus(List<int> ids, String status) async {
+  Future<void> changeEntriesStatus(List<int> ids, EntryStatus status) async {
     final ret = await APIClient(apiKey).put('$baseURL/entries',
         headers: {"Content-Type": "application/json;charset=utf-8"},
-        body:
-            jsonEncode(<String, dynamic>{'entry_ids': ids, 'status': status}));
+        body: jsonEncode(
+            <String, dynamic>{'entry_ids': ids, 'status': status.asString()}));
     if (ret.statusCode != 204) {
       throw ("change entries failed");
     }
