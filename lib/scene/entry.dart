@@ -106,7 +106,7 @@ class _EntryState extends State<EntryScene> {
                           if (val == 1) {
                             Clipboard.setData(ClipboardData(text: _entry.url))
                                 .then((_) {
-                              Scaffold.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   content: Text(
                                       'Article Link copied to clipboard'
                                           .tr())));
@@ -114,7 +114,7 @@ class _EntryState extends State<EntryScene> {
                           }
                           if (val == 2) {
                             _launchURL(_entry.url).catchError((_) {
-                              Scaffold.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   content:
                                       Text('Article Link open failed'.tr())));
                             });

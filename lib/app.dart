@@ -65,9 +65,9 @@ class _AppState extends State<App> {
             listener: (context, state) {
           if (state is SettingsChangeSuccess && state.key == 'language') {
             if (state.value == 'Chinese') {
-              context.locale = Locale('zh', 'CN');
+              context.setLocale(Locale('zh', 'CN'));
             } else {
-              context.locale = Locale('en', 'US');
+              context.setLocale(Locale('en', 'US'));
             }
           }
         }, builder: (context, state) {

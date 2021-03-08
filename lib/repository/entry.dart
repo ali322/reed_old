@@ -45,7 +45,7 @@ class EntryRepository {
 
   Future<Entry> fetchEntry({int id}) async {
     http.Response ret = await APIClient(apiKey).get('$baseURL/entries/$id');
-    print("===> ${baseURL}  ${id}");
+    print("===> $baseURL  $id");
     if (ret.statusCode != 200) {
       throw ("fetch entry failed");
     } else {

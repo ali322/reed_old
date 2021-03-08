@@ -21,7 +21,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
             brightness: Theme.of(context).brightness,
             elevation: 0.0,
@@ -36,101 +36,105 @@ class _AuthorizeState extends State<AuthorizeScene> {
                 },
               ),
             )),
-        body: SafeArea(
-            bottom: true,
-            child: BlocListener<APIBloc, APIState>(
-                listener: (BuildContext context, APIState state) {
-                  if (state is APICredentialSaveFailure) {
-                    Scaffold.of(context).showSnackBar(
-                        SnackBar(content: Text('Submit Failed'.tr())));
-                    setState(() {
-                      _isSubmiting = false;
-                    });
-                  }
-                },
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                      padding: const EdgeInsets.only(
-                          left: 50.0, right: 50.0, top: 20.0),
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 40.0, top: 60.0),
-                            child: Column(
-                              children: <Widget>[
-                                Image.asset('assets/image/REED_TEXT.png', width: 200.0),
-                              ],
-                            ),
-                          ),
-                          TextFormField(
-                            controller: _titleController,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return 'site title can not be empty'.tr();
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "Please input site title".tr(),
-                              hintStyle: TextStyle(fontSize: 14.0),
-                            ),
-                          ),
-                          TextFormField(
-                            controller: _urlController,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return 'site url can not be empty'.tr();
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "Please input site url".tr(),
-                              hintStyle: TextStyle(fontSize: 14.0),
-                            ),
-                          ),
-                          TextFormField(
-                            controller: _keyController,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return 'api key can not be empty';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "Please input api key".tr(),
-                              hintStyle: TextStyle(fontSize: 14.0),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20.0),
-                            child: RaisedButton(
-                              child: Text('Submit'.tr(),
-                                  style: TextStyle(fontSize: 16.0)),
-                              onPressed: _isSubmiting
-                                  ? null
-                                  : () {
-                                      FocusScope.of(context)
-                                          .requestFocus(new FocusNode());
-                                      if (_formKey.currentState.validate()) {
-                                        setState(() {
-                                          _isSubmiting = true;
-                                        });
-                                        final _title = _titleController.text;
-                                        final _url = _urlController.text;
-                                        final _key = _keyController.text;
-                                        BlocProvider.of<APIBloc>(context).add(
-                                            SaveAPICredential(
-                                                title: _title,
-                                                apiKey: _key,
-                                                baseURL: _url));
-                                      }
-                                    },
-                            ),
-                          )
-                        ],
-                      )),
-                ))));
+        body: SingleChildScrollView(
+            child: SafeArea(
+                bottom: true,
+                child: BlocListener<APIBloc, APIState>(
+                    listener: (BuildContext context, APIState state) {
+                      if (state is APICredentialSaveFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Submit Failed'.tr())));
+                        setState(() {
+                          _isSubmiting = false;
+                        });
+                      }
+                    },
+                    child: Form(
+                      key: _formKey,
+                      child: Container(
+                          padding: const EdgeInsets.only(
+                              left: 50.0, right: 50.0, top: 20.0),
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 40.0, top: 60.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    Image.asset('assets/image/REED_TEXT.png',
+                                        width: 200.0),
+                                  ],
+                                ),
+                              ),
+                              TextFormField(
+                                controller: _titleController,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'site title can not be empty'.tr();
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Please input site title".tr(),
+                                  hintStyle: TextStyle(fontSize: 14.0),
+                                ),
+                              ),
+                              TextFormField(
+                                controller: _urlController,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'site url can not be empty'.tr();
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Please input site url".tr(),
+                                  hintStyle: TextStyle(fontSize: 14.0),
+                                ),
+                              ),
+                              TextFormField(
+                                controller: _keyController,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'api key can not be empty';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Please input api key".tr(),
+                                  hintStyle: TextStyle(fontSize: 14.0),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20.0),
+                                child: ElevatedButton(
+                                  child: Text('Submit'.tr(),
+                                      style: TextStyle(fontSize: 16.0)),
+                                  onPressed: _isSubmiting
+                                      ? null
+                                      : () {
+                                          FocusScope.of(context)
+                                              .requestFocus(new FocusNode());
+                                          if (_formKey.currentState
+                                              .validate()) {
+                                            setState(() {
+                                              _isSubmiting = true;
+                                            });
+                                            final _title =
+                                                _titleController.text;
+                                            final _url = _urlController.text;
+                                            final _key = _keyController.text;
+                                            BlocProvider.of<APIBloc>(context)
+                                                .add(SaveAPICredential(
+                                                    title: _title,
+                                                    apiKey: _key,
+                                                    baseURL: _url));
+                                          }
+                                        },
+                                ),
+                              )
+                            ],
+                          )),
+                    )))));
   }
 }

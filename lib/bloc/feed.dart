@@ -85,7 +85,7 @@ class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
       for (var _category in state.categories) {
         _ids.addAll(_category.feeds.map<int>((val) => val.id).toList());
       }
-      final _ret = await repository.fetchFeedIcon(_ids.sublist(0, 10));
+      final _ret = await repository.fetchFeedIcon(_ids.sublist(0));
       List<Category> _next = state.categories.sublist(0);
       _next = _next.map<Category>((val) {
         val.feeds = val.feeds.map<Feed>((feed) {

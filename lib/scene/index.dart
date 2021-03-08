@@ -193,7 +193,7 @@ class _IndexState extends State<IndexScene> {
                   setState(() {
                     _loading = false;
                   });
-                  // _feedsBloc.add(FetchFeedsIcon());
+                  _feedsBloc.add(FetchFeedsIcon());
                 }
               })
             ],

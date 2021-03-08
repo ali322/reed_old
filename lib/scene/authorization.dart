@@ -39,7 +39,7 @@ class AuthorizationScene extends StatelessWidget {
     }
 
     Widget _renderReset(context) {
-      return OutlineButton(
+      return OutlinedButton(
         onPressed: () {
           showDialog(
               context: context,
@@ -47,7 +47,7 @@ class AuthorizationScene extends StatelessWidget {
                 return AlertDialog(
                   content: Text('Are you sure to reset?'.tr()),
                   actions: <Widget>[
-                    FlatButton(
+                    TextButton(
                       child: Text('Yes'.tr()),
                       onPressed: () {
                         context.read<APIBloc>().add(ResetAPICredential());
@@ -57,7 +57,7 @@ class AuthorizationScene extends StatelessWidget {
                         });
                       },
                     ),
-                    FlatButton(
+                    TextButton(
                       child:
                           Text('No'.tr(), style: TextStyle(color: Colors.grey)),
                       onPressed: () {
