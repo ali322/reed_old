@@ -43,7 +43,7 @@ class _SettingsState extends State<SettingsScene> {
                             title: Text('Dark Mode'.tr(),
                                 style: TextStyle(fontSize: 16.0)),
                             trailing: Switch(
-                                value: state.values['isDarkMode'],
+                                value: state.values!['isDarkMode'],
                                 onChanged: (bool truthy) {
                                   context.read<SettingsBloc>().add(
                                       SettingsChanged(
@@ -54,8 +54,8 @@ class _SettingsState extends State<SettingsScene> {
                           leading: Icon(Icons.language),
                           title: Text('Language'.tr(),
                               style: TextStyle(fontSize: 16.0)),
-                          trailing: DropdownButton(
-                            value: state.values['language'],
+                          trailing: DropdownButton<dynamic>(
+                            value: state.values!['language'],
                             onChanged: (val) {
                               context.read<SettingsBloc>().add(
                                   SettingsChanged(key: 'language', value: val));
@@ -72,8 +72,8 @@ class _SettingsState extends State<SettingsScene> {
                           leading: Icon(Icons.file_download),
                           title: Text('Fetch Pertime'.tr(),
                               style: TextStyle(fontSize: 16.0)),
-                          trailing: DropdownButton(
-                            value: state.values['fetchPertime'],
+                          trailing: DropdownButton<dynamic>(
+                            value: state.values!['fetchPertime'],
                             onChanged: (val) {
                               context.read<SettingsBloc>().add(
                                   SettingsChanged(key: 'fetchPertime', value: val));
@@ -95,8 +95,8 @@ class _SettingsState extends State<SettingsScene> {
                           leading: Icon(Icons.format_size),
                           title: Text('FontSize'.tr(),
                               style: TextStyle(fontSize: 16.0)),
-                          trailing: DropdownButton(
-                            value: state.values['fontSize'],
+                          trailing: DropdownButton<dynamic>(
+                            value: state.values!['fontSize'],
                             onChanged: (val) {
                               context.read<SettingsBloc>().add(
                                   SettingsChanged(key: 'fontSize', value: val));
@@ -114,8 +114,8 @@ class _SettingsState extends State<SettingsScene> {
                           leading: Icon(Icons.format_line_spacing),
                           title: Text('LetterSpacing'.tr(),
                               style: TextStyle(fontSize: 16.0)),
-                          trailing: DropdownButton(
-                            value: state.values['letterSpacing'],
+                          trailing: DropdownButton<dynamic>(
+                            value: state.values!['letterSpacing'],
                             onChanged: (val) {
                               context.read<SettingsBloc>().add(SettingsChanged(
                                   key: 'letterSpacing', value: val));
@@ -134,7 +134,7 @@ class _SettingsState extends State<SettingsScene> {
                             title: Text('Bold'.tr(),
                                 style: TextStyle(fontSize: 16.0)),
                             trailing: Switch(
-                                value: state.values['isDarkMode'],
+                                value: state.values!['isDarkMode'],
                                 onChanged: (bool truthy) {
                                   context.read<SettingsBloc>().add(
                                       SettingsChanged(
@@ -181,9 +181,9 @@ class _SettingsState extends State<SettingsScene> {
 
 class SettingsSection extends StatelessWidget {
   final List<Widget> tiles;
-  final Widget header;
-  final Widget footer;
-  const SettingsSection({this.tiles, this.header, this.footer});
+  final Widget? header;
+  final Widget? footer;
+  const SettingsSection({required this.tiles,this.header,this.footer});
 
   @override
   Widget build(BuildContext context) {

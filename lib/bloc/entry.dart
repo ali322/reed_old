@@ -8,7 +8,7 @@ abstract class EntryEvent extends Equatable {
 
 class FetchEntry extends EntryEvent {
   final int id;
-  FetchEntry({@required this.id}) : assert(id != null);
+  FetchEntry({required this.id});
   @override
   List<Object> get props => [id];
 }
@@ -17,18 +17,18 @@ abstract class EntryState extends Equatable {
   const EntryState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class EntryIntial extends EntryState {
-  final Entry entry = null;
+  final Entry? entry = null;
   @override
-  List<Object> get props => [entry];
+  List<Object?> get props => [entry];
 }
 
 class EntryFetchSuccess extends EntryState {
   final Entry entry;
-  const EntryFetchSuccess({@required this.entry}) : assert(entry != null);
+  const EntryFetchSuccess({required this.entry});
 
   @override
   List<Object> get props => [entry];
@@ -39,9 +39,8 @@ class EntryFetchFailure extends EntryState {}
 class EntryBloc extends Bloc<EntryEvent, EntryState> {
   final EntryRepository repository;
 
-  EntryBloc({@required this.repository})
-      : assert(repository != null),
-        super(EntryIntial());
+  EntryBloc({required this.repository})
+      : super(EntryIntial());
 
   @override
   Stream<EntryState> mapEventToState(EntryEvent event) async* {

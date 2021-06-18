@@ -13,10 +13,9 @@ import '../bloc/bloc.dart';
 import '../repository/repository.dart';
 
 class IndexScene extends StatefulWidget {
-  final Map<String, dynamic> settings;
+  final Map<String, dynamic>? settings;
   final String title;
-  const IndexScene({Key key, @required this.settings, @required this.title})
-      : super(key: key);
+  const IndexScene({required this.settings, required this.title});
 
   @override
   State<StatefulWidget> createState() {
@@ -25,12 +24,12 @@ class IndexScene extends StatefulWidget {
 }
 
 class _IndexState extends State<IndexScene> {
-  FeedsBloc _feedsBloc;
-  EntriesBloc _entriesBloc;
-  EntryRepository _entryRepository;
-  MeBloc _meBloc;
+  late FeedsBloc _feedsBloc;
+  late EntriesBloc _entriesBloc;
+  late EntryRepository _entryRepository;
+  late MeBloc _meBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  Completer<void> _completer;
+  late Completer<void> _completer;
   String _sortDirection = 'desc';
   EntryStatus _selectedStatus = EntryStatus.UnReaded;
   int _selectedIndex = 0;
@@ -53,7 +52,7 @@ class _IndexState extends State<IndexScene> {
     _entriesBloc.add(FetchEntries(
         direction: _sortDirection,
         status: EntryStatus.UnReaded,
-        limit: widget.settings['fetchPertime']));
+        limit: widget.settings!['fetchPertime']));
 
     UserRepository _userRepository = context.read<UserRepository>();
     _meBloc = MeBloc(repository: _userRepository);
@@ -64,7 +63,7 @@ class _IndexState extends State<IndexScene> {
     _entriesBloc.add(RefreshEntries(
         status: _selectedStatus,
         direction: _sortDirection,
-        limit: widget.settings['fetchPertime']));
+        limit: widget.settings!['fetchPertime']));
     return _completer.future;
   }
 
@@ -90,7 +89,7 @@ class _IndexState extends State<IndexScene> {
                         _feed.icon != null
                             ? Image.memory(
                                 base64Decode(
-                                    _feed.icon.split(';')[1].split(',')[1]),
+                                    _feed.icon!.split(';')[1].split(',')[1]),
                                 width: 20,
                                 height: 20,
                                 fit: BoxFit.fill,
@@ -178,14 +177,14 @@ class _IndexState extends State<IndexScene> {
             listeners: [
               BlocListener<EntriesBloc, EntriesState>(
                   listener: (context, state) {
-                if (state is EntriesRefreshSuccess) {
-                  _completer?.complete();
+                if (state.status == EntriesStatus.RefreshSuccess) {
+                  _completer.complete();
                   _completer = Completer<void>();
                 }
-                if (state is EntriesFetchSuccess ||
-                    state is EntriesRefreshSuccess) {
+                if (state.status == EntriesStatus.FetchSuccess ||
+                    state.status == EntriesStatus.RefreshSuccess) {
                   _feedsBloc.add(CalculateFeeds(
-                      entries: state.data[_selectedStatus].entries));
+                      entries: state.data[_selectedStatus]!.entries));
                 }
               }),
               BlocListener<FeedsBloc, FeedsState>(listener: (context, state) {
@@ -223,14 +222,14 @@ class _IndexState extends State<IndexScene> {
               setState(() {
                 _loading = true;
               });
-              if (_entriesBloc.state.data[_selectedStatus].offset == 0) {
+              if (_entriesBloc.state.data[_selectedStatus]!.offset == 0) {
                 _entriesBloc.add(FetchEntries(
                     status: _selectedStatus,
                     direction: _sortDirection,
-                    limit: widget.settings['fetchPertime']));
+                    limit: widget.settings!['fetchPertime']));
               } else {
                 _feedsBloc.add(CalculateFeeds(
-                    entries: _entriesBloc.state.data[_selectedStatus].entries));
+                    entries: _entriesBloc.state.data[_selectedStatus]!.entries));
               }
             },
             currentIndex: _selectedIndex,

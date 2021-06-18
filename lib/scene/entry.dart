@@ -14,15 +14,13 @@ import '../bloc/bloc.dart';
 class EntryScene extends StatefulWidget {
   final Function onFetched;
   final int id;
-  const EntryScene({Key key, @required this.id, @required this.onFetched})
-      : assert(id != null),
-        super(key: key);
+  const EntryScene({required this.id, required this.onFetched});
   @override
   State<StatefulWidget> createState() => _EntryState();
 }
 
 class _EntryState extends State<EntryScene> {
-  EntryBloc _bloc;
+  late EntryBloc _bloc;
   @override
   void initState() {
     super.initState();
@@ -67,8 +65,8 @@ class _EntryState extends State<EntryScene> {
                 data: entry.content,
                 style: {
                   "html": Style(
-                      fontSize: FontSize(state.values['fontSize']),
-                      letterSpacing: state.values['letterSpacing']),
+                      fontSize: FontSize(state.values!['fontSize']),
+                      letterSpacing: state.values!['letterSpacing']),
                 },
                 onImageError: (exception, stackTrace) {
                   // print("===>$exception");

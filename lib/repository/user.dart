@@ -4,12 +4,10 @@ class UserRepository {
   final String apiKey;
   final String baseURL;
 
-  UserRepository({@required this.apiKey, @required this.baseURL})
-      : assert(apiKey != null),
-        assert(baseURL != null);
+  UserRepository({required this.apiKey, required this.baseURL});
   
   Future<User> fetchMe() async {
-    http.Response ret = await APIClient(apiKey).get('$baseURL/me');
+    http.Response ret = await APIClient(apiKey).get(Uri.parse('$baseURL/me'));
     if (ret.statusCode != 200) {
       throw ("fetch me failed");
     } else {

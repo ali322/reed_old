@@ -2,7 +2,6 @@ library repository;
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:meta/meta.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:reed/model/model.dart';

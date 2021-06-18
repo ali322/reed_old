@@ -4,12 +4,10 @@ class FeedRepository {
   final String apiKey;
   final String baseURL;
 
-  FeedRepository({@required this.apiKey, @required this.baseURL})
-      : assert(apiKey != null),
-        assert(baseURL != null);
+  FeedRepository({required this.apiKey, required this.baseURL});
 
   Future<List<Category>> fetchCategories() async {
-    http.Response ret = await APIClient(apiKey).get('$baseURL/categories');
+    http.Response ret = await APIClient(apiKey).get(Uri.parse('$baseURL/categories'));
     if (ret.statusCode != 200) {
       throw ("fetch categories failed");
     } else {
@@ -28,7 +26,7 @@ class FeedRepository {
   }
 
   Future<List<Feed>> fetchFeeds() async {
-    http.Response ret = await APIClient(apiKey).get('${this.baseURL}/feeds');
+    http.Response ret = await APIClient(apiKey).get(Uri.parse('${this.baseURL}/feeds'));
     if (ret.statusCode != 200) {
       throw ("fetch feeds failed");
     } else {
@@ -42,7 +40,7 @@ class FeedRepository {
     Map<int, dynamic> _next = {};
     for (var id in ids) {
       final _ret =
-          await APIClient(apiKey).get('${this.baseURL}/feeds/$id/icon');
+          await APIClient(apiKey).get(Uri.parse('${this.baseURL}/feeds/$id/icon'));
       if (_ret.statusCode == 200) {
         var decoded = json.decode(_ret.body) as Map<String, dynamic>;
         _next[decoded['id']] = decoded['data'];
@@ -57,7 +55,7 @@ class FeedRepository {
     Map<int, int> _countOfFeeds = {};
     for (var entry in entries) {
       if (_countOfFeeds[entry.feedID] != null) {
-        _countOfFeeds[entry.feedID] += 1;
+        _countOfFeeds[entry.feedID] = _countOfFeeds[entry.feedID]! + 1;
       } else {
         _countOfFeeds[entry.feedID] = 1;
       }

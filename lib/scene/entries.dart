@@ -9,9 +9,9 @@ import 'package:reed/scene/entry.dart';
 import '../bloc/bloc.dart';
 
 class EntriesScene extends StatefulWidget {
-  final Feed feed;
+  final Feed? feed;
   final EntryStatus status;
-  const EntriesScene({Key key, this.feed, this.status}) : super(key: key);
+  const EntriesScene({this.feed, required this.status});
   @override
   State<StatefulWidget> createState() {
     return _EntriesState();
@@ -64,7 +64,7 @@ class _EntriesState extends State<EntriesScene> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text(widget.feed == null ? "All".tr() : widget.feed.title),
+          title: Text(widget.feed == null ? "All".tr() : widget.feed!.title),
           elevation: 0.5,
           actions: <Widget>[
             PopupMenuButton(
@@ -95,14 +95,14 @@ class _EntriesState extends State<EntriesScene> {
         ),
         body: BlocBuilder<EntriesBloc, EntriesState>(
           builder: (context, state) {
-            if (state is EntriesFetchSuccess ||
-                state is EntriesRefreshSuccess ||
-                state is EntriesChangeSuccess ||
-                state is EntriesSortSuccess) {
-              List<Entry> _entries = state.data[widget.status].entries;
+            if (state.status == EntriesStatus.FetchSuccess ||
+                state.status == EntriesStatus.RefreshSuccess ||
+                state.status == EntriesStatus.SortSuccess ||
+                state.status == EntriesStatus.ChangeSuccess) {
+              List<Entry> _entries = state.data[widget.status]!.entries;
               if (widget.feed != null) {
                 _entries =
-                    _entries.where((v) => v.feedID == widget.feed.id).toList();
+                    _entries.where((v) => v.feedID == widget.feed!.id).toList();
               }
               return _renderEntries(_entries);
             }

@@ -12,10 +12,7 @@ class SaveAPICredential extends APIEvent {
   final String baseURL;
 
   const SaveAPICredential(
-      {@required this.title, @required this.apiKey, @required this.baseURL})
-      : assert(apiKey != null),
-        assert(title != null),
-        assert(baseURL != null);
+      {required this.title, required this.apiKey, required this.baseURL});
 
   @override
   List<Object> get props => [apiKey, baseURL];
@@ -38,11 +35,7 @@ class APICredentialSaveSuccess extends APIState {
   final String baseURL;
   final String title;
 
-  const APICredentialSaveSuccess(
-      {@required this.apiKey, @required this.baseURL, @required this.title})
-      : assert(apiKey != null),
-        assert(title != null),
-        assert(baseURL != null);
+  const APICredentialSaveSuccess({required this.apiKey, required this.baseURL, required this.title});
 
   @override
   List<Object> get props => [apiKey, baseURL];
@@ -55,11 +48,7 @@ class APICredentialLoadSuccess extends APIState {
   final String baseURL;
   final String title;
 
-  const APICredentialLoadSuccess(
-      {@required this.apiKey, @required this.baseURL, @required this.title})
-      : assert(apiKey != null),
-        assert(title != null),
-        assert(baseURL != null);
+  const APICredentialLoadSuccess({required this.apiKey, required this.baseURL, required this.title});
 
   @override
   List<Object> get props => [apiKey, baseURL];
@@ -72,9 +61,8 @@ class APICredentialLoading extends APIState {}
 class APIBloc extends Bloc<APIEvent, APIState> {
   final APIRepository repository;
 
-  APIBloc({@required this.repository})
-      : assert(repository != null),
-        super(APIInitial());
+  APIBloc({required this.repository})
+      : super(APIInitial());
 
   @override
   Stream<APIState> mapEventToState(APIEvent event) async* {

@@ -12,7 +12,7 @@ Map<String, EntryStatus> _vals() {
 }
 
 EntryStatus entryStatusfromString(String val) {
-  return _vals()[val];
+  return _vals()[val] ?? EntryStatus.UnReaded;
 }
 
 extension EntryStatusExt on EntryStatus {
@@ -34,16 +34,16 @@ class Entry {
   final Feed feed;
 
   Entry(
-      {this.id,
-      this.title,
-      this.author,
-      this.url,
-      this.content,
-      this.publishedAt,
-      this.status,
-      this.isStarred,
-      this.feed,
-      this.feedID});
+      {required this.id,
+      required this.title,
+      required this.author,
+      required this.url,
+      required this.content,
+      required this.publishedAt,
+      required this.status,
+      required this.isStarred,
+      required this.feed,
+      required this.feedID});
 
   Entry.fromJSON(Map json)
       : this.id = json['id'],

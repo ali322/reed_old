@@ -6,7 +6,7 @@ class User {
   final bool isAdmin;
   final String lastLoginAt;
 
-  User({this.id, this.username, this.isAdmin, this.lastLoginAt});
+  User({required this.id,required this.username,required this.isAdmin,required this.lastLoginAt});
 
   User.fromJSON(Map json)
       : this.id = json['id'],

@@ -11,7 +11,8 @@ class FetchEntries extends EntriesEvent {
   final String direction;
   final int limit;
 
-  const FetchEntries({this.status, this.limit, this.direction});
+  const FetchEntries(
+      {required this.status, required this.limit, required this.direction});
 }
 
 class RefreshEntries extends EntriesEvent {
@@ -19,15 +20,14 @@ class RefreshEntries extends EntriesEvent {
   final String direction;
   final int limit;
 
-  const RefreshEntries({this.status, this.limit, this.direction});
+  const RefreshEntries(
+      {required this.status, required this.limit, required this.direction});
 }
 
 class SortEntries extends EntriesEvent {
   final String direction;
   final EntryStatus status;
-  const SortEntries({@required this.direction, @required this.status})
-      : assert(direction != null),
-        assert(status != null);
+  const SortEntries({required this.direction, required this.status});
 }
 
 class SelectEntries extends EntriesEvent {
@@ -35,17 +35,16 @@ class SelectEntries extends EntriesEvent {
   final String direction;
   final int limit;
 
-  const SelectEntries({this.status, this.limit, this.direction});
+  const SelectEntries(
+      {required this.status, required this.limit, required this.direction});
 }
 
 class ChangeEntriesStatus extends EntriesEvent {
   final List<int> ids;
   final EntryStatus from;
   final EntryStatus to;
-  const ChangeEntriesStatus({@required this.ids, @required this.from, @required this.to})
-      : assert(ids != null),
-        assert( from != null),
-        assert(to != null);
+  const ChangeEntriesStatus(
+      {required this.ids, required this.from, required this.to});
 }
 
 class Entries {
@@ -55,64 +54,41 @@ class Entries {
   const Entries({this.total = 0, this.offset = 0, this.entries = const []});
 }
 
-abstract class EntriesState extends Equatable {
-  final Map<EntryStatus, Entries> data;
-  const EntriesState({@required this.data});
-  @override
-  List<Object> get props => [data];
+enum EntriesStatus {
+  Inital,
+  FetchSuccess,
+  FetchFailure,
+  RefreshSuccess,
+  SortSuccess,
+  ChangeSuccess
 }
 
-class EntriesIntial extends EntriesState {
+class EntriesState extends Equatable {
+  final EntriesStatus status;
   final Map<EntryStatus, Entries> data;
-  const EntriesIntial(
-      {this.data = const <EntryStatus, Entries>{
+  const EntriesState(
+      {this.status = EntriesStatus.Inital,
+      this.data = const <EntryStatus, Entries>{
         EntryStatus.UnReaded: Entries(),
         EntryStatus.All: Entries(),
         EntryStatus.Starred: Entries()
       }});
+  EntriesState copyWith(
+      {EntriesStatus? status, Map<EntryStatus, Entries>? data}) {
+    return EntriesState(
+      status: status ?? this.status,
+      data: data ?? this.data,
+    );
+  }
 
   @override
-  List<Object> get props => [data];
-}
-
-class EntriesFetching extends EntriesState {}
-
-class EntriesFetchSuccess extends EntriesState {
-  final Map<EntryStatus, Entries> data;
-  const EntriesFetchSuccess({@required this.data}) : assert(data != null);
-  @override
-  List<Object> get props => [data];
-}
-
-class EntriesFetchFailure extends EntriesState {}
-
-class EntriesRefreshSuccess extends EntriesState {
-  final Map<EntryStatus, Entries> data;
-  const EntriesRefreshSuccess({@required this.data}) : assert(data != null);
-  @override
-  List<Object> get props => [data];
-}
-
-class EntriesSortSuccess extends EntriesState {
-  final Map<EntryStatus, Entries> data;
-  const EntriesSortSuccess({@required this.data}) : assert(data != null);
-  @override
-  List<Object> get props => [data];
-}
-
-class EntriesChangeSuccess extends EntriesState {
-  final Map<EntryStatus, Entries> data;
-  const EntriesChangeSuccess({@required this.data}) : assert(data != null);
-  @override
-  List<Object> get props => [data];
+  List<Object> get props => [status, data];
 }
 
 class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
   final EntryRepository repository;
 
-  EntriesBloc({@required this.repository})
-      : assert(repository != null),
-        super(EntriesIntial());
+  EntriesBloc({required this.repository}) : super(EntriesState());
 
   List<Entry> _sort(List<Entry> entries, String direction) {
     List<Entry> _next = entries.sublist(0);
@@ -133,9 +109,8 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
   @override
   Stream<EntriesState> mapEventToState(EntriesEvent event) async* {
     if (event is FetchEntries) {
-      final _offset = state.data[event.status].offset;
+      final _offset = state.data[event.status]!.offset;
       var _next = Map.fromEntries(state.data.entries);
-      yield EntriesFetching();
       try {
         final _ret = await repository.fetchEntries(
             status: event.status, offset: _offset, limit: event.limit);
@@ -144,18 +119,18 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
           total: _ret['total'],
           offset: _offset + event.limit,
         );
-        yield EntriesFetchSuccess(data: _next);
+        yield state.copyWith(status: EntriesStatus.FetchSuccess, data: _next);
       } catch (e) {
-        print("===>$e");
-        yield EntriesFetchFailure();
+        print("===>errrr $e");
+        yield state.copyWith(status: EntriesStatus.FetchFailure);
       }
     }
     if (event is RefreshEntries) {
       try {
-        final _offset = state.data[event.status].offset;
+        final _offset = state.data[event.status]!.offset;
         final _ret = await repository.fetchEntries(
             status: event.status, offset: _offset, limit: event.limit);
-        final _entries = state.data[event.status].entries.sublist(0)
+        final _entries = state.data[event.status]!.entries.sublist(0)
           ..addAll(_ret['rows']);
         var _next = Map.fromEntries(state.data.entries);
         _next[event.status] = Entries(
@@ -163,23 +138,23 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
           total: _ret['total'],
           offset: _offset + event.limit,
         );
-        yield EntriesRefreshSuccess(data: _next);
+        yield state.copyWith(status: EntriesStatus.RefreshSuccess, data: _next);
       } catch (e) {
         print("===>$e");
-        yield EntriesFetchFailure();
+        yield state.copyWith(status: EntriesStatus.FetchFailure);
       }
     }
     if (event is SortEntries) {
       var _next = Map.fromEntries(state.data.entries);
       _next[event.status] = Entries(
-        entries: _sort(state.data[event.status].entries, event.direction),
-        total: state.data[event.status].total,
-        offset: state.data[event.status].offset,
+        entries: _sort(state.data[event.status]!.entries, event.direction),
+        total: state.data[event.status]!.total,
+        offset: state.data[event.status]!.offset,
       );
-      yield EntriesSortSuccess(data: _next);
+      yield state.copyWith(status: EntriesStatus.SortSuccess, data: _next);
     }
     if (event is ChangeEntriesStatus) {
-      List<Entry> _entries = state.data[event.from].entries.sublist(0);
+      List<Entry> _entries = state.data[event.from]!.entries.sublist(0);
       await repository.changeEntriesStatus(event.ids, event.to);
       _entries = _entries.map<Entry>((val) {
         if (event.ids.any((id) => id == val.id)) {
@@ -190,10 +165,10 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
       var _next = Map.fromEntries(state.data.entries);
       _next[event.from] = Entries(
         entries: _entries,
-        total: state.data[event.from].total,
-        offset: state.data[event.from].offset,
+        total: state.data[event.from]!.total,
+        offset: state.data[event.from]!.offset,
       );
-      yield EntriesChangeSuccess(data: _next);
+      yield state.copyWith(status: EntriesStatus.ChangeSuccess, data: _next);
     }
   }
 }

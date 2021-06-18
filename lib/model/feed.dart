@@ -5,20 +5,20 @@ class Feed {
   final String title;
   final String url;
   final String siteURL;
-  String icon;
-  int count;
+  String? icon;
+  late int count;
   final bool isSpark;
   final String updatedAt;
   final int categoryID;
 
   Feed(
-      {this.id,
-      this.title,
-      this.url,
-      this.categoryID,
-      this.siteURL,
-      this.isSpark,
-      this.updatedAt});
+      {required this.id,
+      required this.title,
+      required this.url,
+      required this.categoryID,
+      required this.siteURL,
+      required this.isSpark,
+      required this.updatedAt});
 
   Feed.fromJSON(Map json)
       : this.id = json['id'],

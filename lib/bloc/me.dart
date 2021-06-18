@@ -12,18 +12,18 @@ abstract class MeState extends Equatable {
   const MeState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class MeInitial extends MeState {
-  final User user = null;
+  final User? user = null;
   @override
-  List<Object> get props => [user];
+  List<Object?> get props => [user];
 }
 
 class MeFetchSuccess extends MeState {
   final User user;
-  const MeFetchSuccess({@required this.user}) : assert(user != null);
+  const MeFetchSuccess({required this.user});
 
   @override
   List<Object> get props => [user];
@@ -34,9 +34,8 @@ class MeFetchFailure extends MeState {}
 class MeBloc extends Bloc<MeEvent, MeState> {
   final UserRepository repository;
 
-  MeBloc({@required this.repository})
-      : assert(repository != null),
-        super(MeInitial());
+  MeBloc({required this.repository})
+      : super(MeInitial());
 
   @override
   Stream<MeState> mapEventToState(MeEvent event) async* {

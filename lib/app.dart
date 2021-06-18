@@ -15,8 +15,8 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  APIBloc _apiBloc;
-  SettingsBloc _settingsBloc;
+  late APIBloc _apiBloc;
+  late SettingsBloc _settingsBloc;
 
   @override
   void initState() {
@@ -78,10 +78,10 @@ class _AppState extends State<App> {
             supportedLocales: context.supportedLocales,
             locale: context.locale,
             theme: ThemeData(
-                brightness: state.values['isDarkMode'] == true
+                brightness: state.values!['isDarkMode'] == true
                     ? Brightness.dark
                     : Brightness.light,
-                primaryColor: state.values['isDarkMode'] == true
+                primaryColor: state.values!['isDarkMode'] == true
                     ? Colors.black
                     : Colors.deepOrange,
                 primaryColorDark: Colors.black,

@@ -12,51 +12,54 @@ class FetchFeedsIcon extends FeedsEvent {}
 
 class CalculateFeeds extends FeedsEvent {
   final List<Entry> entries;
-  const CalculateFeeds({@required this.entries});
+  const CalculateFeeds({required this.entries});
   @override
   List<Object> get props => [entries];
 }
 
 abstract class FeedsState extends Equatable {
   final List<Category> categories;
-  const FeedsState({@required this.categories});
+  const FeedsState({required this.categories});
 
   @override
   List<Object> get props => [];
 }
 
 class FeedsInitial extends FeedsState {
-  final List<Category> categories = [];
+  const FeedsInitial():super(categories:const []);
   @override
   List<Object> get props => [categories];
 }
 
 class FeedsFetchSuccess extends FeedsState {
   final List<Category> categories;
-  const FeedsFetchSuccess({@required this.categories})
-      : assert(categories != null);
+  const FeedsFetchSuccess({required this.categories}):super(categories: categories);
 
   @override
   List<Object> get props => [categories];
 }
 
-class FeedsFetchFailure extends FeedsState {}
+class FeedsFetchFailure extends FeedsState {
+  const FeedsFetchFailure():super(categories:const []);
+}
 
 class FeedsIconFetchSuccess extends FeedsState {
   final List<Category> categories;
-  const FeedsIconFetchSuccess({@required this.categories})
-      : assert(categories != null);
+  const FeedsIconFetchSuccess({required this.categories})
+      : super(categories: categories);
 
   @override
   List<Object> get props => [categories];
 }
 
-class FeedsCalculating extends FeedsState {}
+class FeedsCalculating extends FeedsState {
+  const FeedsCalculating():super(categories:const []);
+}
 
 class FeedsCalculateSuccess extends FeedsState {
   final List<Category> categories;
-  const FeedsCalculateSuccess({@required this.categories})
-      : assert(categories != null);
+  const FeedsCalculateSuccess({required this.categories})
+      : super(categories: categories);
 
   @override
   List<Object> get props => [categories];
@@ -65,9 +68,8 @@ class FeedsCalculateSuccess extends FeedsState {
 class FeedsBloc extends Bloc<FeedsEvent, FeedsState> {
   final FeedRepository repository;
 
-  FeedsBloc({@required this.repository})
-      : assert(repository != null),
-        super(FeedsInitial());
+  FeedsBloc({required this.repository})
+      : super(FeedsInitial());
 
   @override
   Stream<FeedsState> mapEventToState(FeedsEvent event) async* {

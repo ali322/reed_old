@@ -69,7 +69,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
                               TextFormField(
                                 controller: _titleController,
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value == null) {
                                     return 'site title can not be empty'.tr();
                                   }
                                   return null;
@@ -82,7 +82,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
                               TextFormField(
                                 controller: _urlController,
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value == null) {
                                     return 'site url can not be empty'.tr();
                                   }
                                   return null;
@@ -95,7 +95,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
                               TextFormField(
                                 controller: _keyController,
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value == null) {
                                     return 'api key can not be empty';
                                   }
                                   return null;
@@ -115,7 +115,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
                                       : () {
                                           FocusScope.of(context)
                                               .requestFocus(new FocusNode());
-                                          if (_formKey.currentState
+                                          if (_formKey.currentState!
                                               .validate()) {
                                             setState(() {
                                               _isSubmiting = true;

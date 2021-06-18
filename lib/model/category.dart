@@ -3,17 +3,17 @@ part of model;
 class Category {
   final int id;
   final String title;
-  List<Feed> feeds;
-  int count;
+  late List<Feed> feeds;
+  int? count;
 
-  Category({this.id, this.title, this.feeds});
+  Category({required this.id,required this.title,required this.feeds});
 
   Category.fromJSON(Map json)
       : this.id = json['id'],
         this.title = json['title'],
         this.feeds = [];
 
-  copyWith({List<Feed> feeds}) {
+  copyWith({required List<Feed> feeds}) {
     this.feeds = feeds;
   }
 }
