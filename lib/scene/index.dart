@@ -70,6 +70,11 @@ class _IndexState extends State<IndexScene> {
   Widget _renderTile(Category category, BuildContext context) {
     return ExpansionTile(
       title: Text(category.title, style: TextStyle(fontSize: 16.0)),
+      onExpansionChanged: (bool expanded) => {
+        if(expanded) {
+          _feedsBloc.add(FetchFeedsIcon(feeds: category.feeds))
+        }
+      },
       children: category.feeds
           .map<Widget>((_feed) => InkWell(
                 onTap: () {
@@ -188,11 +193,11 @@ class _IndexState extends State<IndexScene> {
                 }
               }),
               BlocListener<FeedsBloc, FeedsState>(listener: (context, state) {
-                if (state is FeedsCalculateSuccess) {
+                if (state.status == FeedsStatus.CalculateSuccess) {
                   setState(() {
                     _loading = false;
                   });
-                  _feedsBloc.add(FetchFeedsIcon());
+                  // _feedsBloc.add(FetchFeedsIcon());
                 }
               })
             ],

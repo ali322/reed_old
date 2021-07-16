@@ -41,7 +41,7 @@ class _AuthorizeState extends State<AuthorizeScene> {
                 bottom: true,
                 child: BlocListener<APIBloc, APIState>(
                     listener: (BuildContext context, APIState state) {
-                      if (state is APICredentialSaveFailure) {
+                      if (state.status == APIStatus.CredentialSaveFailure) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Submit Failed'.tr())));
                         setState(() {

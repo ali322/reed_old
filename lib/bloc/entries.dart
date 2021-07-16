@@ -47,11 +47,11 @@ class ChangeEntriesStatus extends EntriesEvent {
       {required this.ids, required this.from, required this.to});
 }
 
-class Entries {
+class EntriesData {
   final int total;
   final List<Entry> entries;
   final int offset;
-  const Entries({this.total = 0, this.offset = 0, this.entries = const []});
+  const EntriesData({this.total = 0, this.offset = 0, this.entries = const []});
 }
 
 enum EntriesStatus {
@@ -65,16 +65,16 @@ enum EntriesStatus {
 
 class EntriesState extends Equatable {
   final EntriesStatus status;
-  final Map<EntryStatus, Entries> data;
+  final Map<EntryStatus, EntriesData> data;
   const EntriesState(
       {this.status = EntriesStatus.Inital,
-      this.data = const <EntryStatus, Entries>{
-        EntryStatus.UnReaded: Entries(),
-        EntryStatus.All: Entries(),
-        EntryStatus.Starred: Entries()
+      this.data = const <EntryStatus, EntriesData>{
+        EntryStatus.UnReaded: EntriesData(),
+        EntryStatus.All: EntriesData(),
+        EntryStatus.Starred: EntriesData()
       }});
   EntriesState copyWith(
-      {EntriesStatus? status, Map<EntryStatus, Entries>? data}) {
+      {EntriesStatus? status, Map<EntryStatus, EntriesData>? data}) {
     return EntriesState(
       status: status ?? this.status,
       data: data ?? this.data,
@@ -114,14 +114,14 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
       try {
         final _ret = await repository.fetchEntries(
             status: event.status, offset: _offset, limit: event.limit);
-        _next[event.status] = Entries(
+        _next[event.status] = EntriesData(
           entries: _sort(_ret["rows"], event.direction),
           total: _ret['total'],
           offset: _offset + event.limit,
         );
         yield state.copyWith(status: EntriesStatus.FetchSuccess, data: _next);
       } catch (e) {
-        print("===>errrr $e");
+        print("===> $e");
         yield state.copyWith(status: EntriesStatus.FetchFailure);
       }
     }
@@ -133,7 +133,7 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
         final _entries = state.data[event.status]!.entries.sublist(0)
           ..addAll(_ret['rows']);
         var _next = Map.fromEntries(state.data.entries);
-        _next[event.status] = Entries(
+        _next[event.status] = EntriesData(
           entries: _sort(_entries, event.direction),
           total: _ret['total'],
           offset: _offset + event.limit,
@@ -146,7 +146,7 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
     }
     if (event is SortEntries) {
       var _next = Map.fromEntries(state.data.entries);
-      _next[event.status] = Entries(
+      _next[event.status] = EntriesData(
         entries: _sort(state.data[event.status]!.entries, event.direction),
         total: state.data[event.status]!.total,
         offset: state.data[event.status]!.offset,
@@ -163,7 +163,7 @@ class EntriesBloc extends Bloc<EntriesEvent, EntriesState> {
         return val;
       }).toList();
       var _next = Map.fromEntries(state.data.entries);
-      _next[event.from] = Entries(
+      _next[event.from] = EntriesData(
         entries: _entries,
         total: state.data[event.from]!.total,
         offset: state.data[event.from]!.offset,

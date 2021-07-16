@@ -92,13 +92,13 @@ class _EntryState extends State<EntryScene> {
               actions: <Widget>[
                 BlocConsumer<EntryBloc, EntryState>(
                   listener: (context, state) {
-                    if (state is EntryFetchSuccess) {
+                    if (state.status == EntryStateStatus.FetchSuccess) {
                       widget.onFetched(widget.id);
                     }
                   },
                   builder: (context, state) {
-                    if (state is EntryFetchSuccess) {
-                      final _entry = state.entry;
+                    if (state.status == EntryStateStatus.FetchSuccess) {
+                      final _entry = state.entry!;
                       return PopupMenuButton(
                         onSelected: (int val) {
                           if (val == 1) {
@@ -139,8 +139,8 @@ class _EntryState extends State<EntryScene> {
                 bottom: true,
                 child: BlocBuilder<EntryBloc, EntryState>(
                   builder: (BuildContext context, state) {
-                    if (state is EntryFetchSuccess) {
-                      final _entry = state.entry;
+                    if (state.status == EntryStateStatus.FetchSuccess) {
+                      final _entry = state.entry!;
                       return SingleChildScrollView(
                           child: Container(
                               padding:

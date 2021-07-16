@@ -22,47 +22,44 @@ class LoadAPICredential extends APIEvent {}
 
 class ResetAPICredential extends APIEvent {}
 
-abstract class APIState extends Equatable {
-  const APIState();
-  @override
-  List<Object> get props => [];
+enum APIStatus {
+  Initial,
+  CredentialSaveSuccess,
+  CredentialSaveFailure,
+  CredentialLoadSuccess,
+  CredentialLoadFailure,
+  CredentialLoading
 }
 
-class APIInitial extends APIState {}
-
-class APICredentialSaveSuccess extends APIState {
+class APIState extends Equatable {
+  final APIStatus status;
   final String apiKey;
   final String baseURL;
-  final String title;
-
-  const APICredentialSaveSuccess({required this.apiKey, required this.baseURL, required this.title});
-
+  final String? title;
+  const APIState(
+      {this.status = APIStatus.Initial,
+      this.apiKey = "",
+      this.baseURL = "",
+      this.title});
+  APIState copyWith(
+          {APIStatus? status,
+          String? apiKey,
+          String? baseURL,
+          String? title}) =>
+      APIState(
+        status: status ?? this.status,
+        apiKey: apiKey ?? this.apiKey,
+        baseURL: baseURL ?? this.baseURL,
+        title: title ?? this.title,
+      );
   @override
-  List<Object> get props => [apiKey, baseURL];
+  List<Object?> get props => [apiKey, baseURL, title];
 }
-
-class APICredentialSaveFailure extends APIState {}
-
-class APICredentialLoadSuccess extends APIState {
-  final String apiKey;
-  final String baseURL;
-  final String title;
-
-  const APICredentialLoadSuccess({required this.apiKey, required this.baseURL, required this.title});
-
-  @override
-  List<Object> get props => [apiKey, baseURL];
-}
-
-class APICredentialLoadFailure extends APIState {}
-
-class APICredentialLoading extends APIState {}
 
 class APIBloc extends Bloc<APIEvent, APIState> {
   final APIRepository repository;
 
-  APIBloc({required this.repository})
-      : super(APIInitial());
+  APIBloc({required this.repository}) : super(APIState());
 
   @override
   Stream<APIState> mapEventToState(APIEvent event) async* {
@@ -70,27 +67,31 @@ class APIBloc extends Bloc<APIEvent, APIState> {
       try {
         await repository.saveAPI(
             apiKey: event.apiKey, baseURL: event.baseURL, title: event.title);
-        yield APICredentialSaveSuccess(
-            title: event.title, apiKey: event.apiKey, baseURL: event.baseURL);
+        yield state.copyWith(
+            status: APIStatus.CredentialSaveSuccess,
+            title: event.title,
+            apiKey: event.apiKey,
+            baseURL: event.baseURL);
       } catch (e) {
-        yield APICredentialSaveFailure();
+        yield state.copyWith(status: APIStatus.CredentialSaveFailure);
       }
     }
     if (event is LoadAPICredential) {
-      yield APICredentialLoading();
+      yield state.copyWith(status: APIStatus.CredentialLoading);
       final _ret = await repository.loadAPI();
       if (_ret != null) {
-        yield APICredentialLoadSuccess(
+        yield state.copyWith(
+            status: APIStatus.CredentialLoadSuccess,
             title: _ret['title'],
             apiKey: _ret['key'],
             baseURL: _ret['baseURL']);
       } else {
-        yield APICredentialLoadFailure();
+        yield state.copyWith(status: APIStatus.CredentialLoadFailure);
       }
     }
     if (event is ResetAPICredential) {
       await repository.deleteAPI();
-      yield APIInitial();
+      yield state.copyWith(status: APIStatus.Initial);
     }
   }
 }

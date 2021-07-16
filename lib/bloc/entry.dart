@@ -13,43 +13,37 @@ class FetchEntry extends EntryEvent {
   List<Object> get props => [id];
 }
 
-abstract class EntryState extends Equatable {
-  const EntryState();
-
-  @override
-  List<Object?> get props => [];
+enum EntryStateStatus{
+  Inital,
+  FetchSuccess,
+  FetchFailure
 }
 
-class EntryIntial extends EntryState {
-  final Entry? entry = null;
-  @override
+class EntryState extends Equatable{
+  final EntryStateStatus status;
+  final Entry? entry;
   List<Object?> get props => [entry];
+  EntryState({this.status = EntryStateStatus.Inital, this.entry});
+  EntryState copyWith({EntryStateStatus? status, Entry? entry}) => EntryState(
+    status: status ?? this.status,
+    entry: entry ?? this.entry
+  );
 }
-
-class EntryFetchSuccess extends EntryState {
-  final Entry entry;
-  const EntryFetchSuccess({required this.entry});
-
-  @override
-  List<Object> get props => [entry];
-}
-
-class EntryFetchFailure extends EntryState {}
 
 class EntryBloc extends Bloc<EntryEvent, EntryState> {
   final EntryRepository repository;
 
   EntryBloc({required this.repository})
-      : super(EntryIntial());
+      : super(EntryState());
 
   @override
   Stream<EntryState> mapEventToState(EntryEvent event) async* {
     if (event is FetchEntry) {
       try {
         final _ret = await repository.fetchEntry(id: event.id);
-        yield EntryFetchSuccess(entry: _ret);
+        yield state.copyWith( status: EntryStateStatus.FetchSuccess,entry: _ret);
       } catch (e) {
-        yield EntryFetchFailure();
+        yield state.copyWith(status: EntryStateStatus.FetchFailure);
       }
     }
   }
