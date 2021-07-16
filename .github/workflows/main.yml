@@ -35,10 +35,17 @@ jobs:
           channel: "stable"
           flutter-version: "2.2.x"
       - run: flutter pub get
+      - run: echo $ENCODE_KEYSTORE | base64 -di > android/app/keystore.jks
+        env:
+          ENCODE_KEYSTORE: ${{ secrets.ENCODE_KEYSTORE }}
       - run: flutter build apk --split-per-abi
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
       - name: Release apk
         uses: ncipollo/release-action@v1.5.0
         with:
           artifacts: "build/app/outputs/apk/release/*.apk"
-          token: ${{ secrets.GITHUB_RElEASE_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
