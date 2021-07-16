@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-java@v2.1.0
         with:
           java-version: "12.x"
+          distribution: "adopt"
 
       - name: Flutter action
         uses: subosito/flutter-action@v1.5.3
