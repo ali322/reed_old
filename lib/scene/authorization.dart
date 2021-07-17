@@ -93,7 +93,8 @@ class AuthorizationScene extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: BlocBuilder<APIBloc, APIState>(
               builder: (context, state) {
-                if (state.status == APIStatus.CredentialLoadSuccess || state.status == APIStatus.CredentialSaveSuccess) {
+                if (state.status == APIStatus.CredentialLoadSuccess ||
+                  state.status == APIStatus.CredentialSaveSuccess) {
                   return Column(
                     children: <Widget>[
                       _renderAuthorization(context, state),

@@ -35,7 +35,7 @@ class EntryRepository {
     } else {
       ret.headers['content-type'] = 'application/json;charset=utf-8';
       var decoded = json.decode(ret.body) as Map<String, dynamic>;
-      print("====>entries ${decoded['entries']}");
+      // print("====>entries ${decoded['entries']}");
       List<Entry> _entries =
           decoded["entries"].map<Entry>((v) => Entry.fromJSON(v)).toList();
       return <String, dynamic>{'total': decoded['total'], 'rows': _entries};
@@ -44,7 +44,7 @@ class EntryRepository {
 
   Future<Entry> fetchEntry({required int id}) async {
     http.Response ret = await APIClient(apiKey).get(Uri.parse('$baseURL/entries/$id'));
-    print("===> $baseURL  $id");
+    // print("===> $baseURL  $id");
     if (ret.statusCode != 200) {
       throw ("fetch entry failed");
     } else {

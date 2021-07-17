@@ -53,7 +53,7 @@ class APIState extends Equatable {
         title: title ?? this.title,
       );
   @override
-  List<Object?> get props => [apiKey, baseURL, title];
+  List<Object?> get props => [apiKey, baseURL, title, status];
 }
 
 class APIBloc extends Bloc<APIEvent, APIState> {

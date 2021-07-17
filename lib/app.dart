@@ -63,7 +63,7 @@ class _AppState extends State<App> {
         ],
         child: BlocConsumer<SettingsBloc, SettingsState>(
             listener: (context, state) {
-          if (state.status == SettingsStatus.ChangeSuccess && state.key == 'language') {
+          if (state.status == SettingsStatus.LoadSuccess && state.key == 'language') {
             if (state.value == 'Chinese') {
               context.setLocale(Locale('zh', 'CN'));
             } else {
@@ -90,8 +90,9 @@ class _AppState extends State<App> {
                 // hintColor: Colors.black54,
                 visualDensity: VisualDensity.adaptivePlatformDensity),
             home: BlocBuilder<APIBloc, APIState>(builder: (context, state) {
-              if (state.status == APIStatus.CredentialSaveSuccess ||
-                  state.status == APIStatus.CredentialLoadSuccess) {
+              print("===>${state.status}");
+              if (state.status == APIStatus.CredentialLoadSuccess ||
+                  state.status == APIStatus.CredentialSaveSuccess) {
                 return _renderIndex(context, state);
               }
               if (state.status == APIStatus.CredentialLoading) {
